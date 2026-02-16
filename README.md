@@ -1,6 +1,7 @@
 # Rocket Food Delivery - Mobile Application
 
 ## Student Information
+
 **Name:** Valoree Armstrong
 **Module:** 13 - Mobile Development 1
 **Project:** React Native Food Delivery App
@@ -35,7 +36,6 @@ The second difference is the UI elements they use. React uses HTML elements like
 The third difference is how they render content. React renders content to the browser's DOM (Document Object Model). React Native does not use the DOM. Instead, it connects to native mobile APIs and renders real mobile UI components on the device.
 
 The fourth difference is styling. React uses regular CSS files to style web pages. React Native does not use traditional CSS. Instead, it uses JavaScript objects to style components directly within the app.
-
 
 ---
 
@@ -73,6 +73,7 @@ The fourth difference is styling. React uses regular CSS files to style web page
 ## Environment Setup
 
 ### Technologies Used
+
 - React Native
 - Expo Platform
 - React Navigation
@@ -81,9 +82,11 @@ The fourth difference is styling. React uses regular CSS files to style web page
 - Font Awesome Icons
 
 ### Installation Instructions
+
 [Will be added after project setup]
 
 ---
 
 ## Project Structure
+
 [Will be updated as project develops]
