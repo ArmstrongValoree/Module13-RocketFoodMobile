@@ -30,9 +30,9 @@ React Native is a framework that allows developers to build real mobile apps for
 **Key Differences:**
 The first key difference is the platform they are built for. React is used to build web applications that run inside a browser, while React Native is used to build mobile applications that run directly on iOS and Android devices.
 
-The second difference is the UI elementsnthey use. React uses HTML elements like `<div>` and `<h1>` to build web pages. React Native does not use HTML. Instead, it uses mobile-specific components like `<View>` and `<Text>` that are translated into real native mobile interface elements.
+The second difference is the UI elements they use. React uses HTML elements like `<div>` and `<h1>` to build web pages. React Native does not use HTML. Instead, it uses mobile-specific components like `<View>` and `<Text>` that are translated into real native mobile interface elements.
 
-The third difference is how they render content. React renders content to the browser’s DOM (Document Object Model). React Native does not use the DOM. Instead, it connects to native mobile APIs and renders real mobile UI components on the device.
+The third difference is how they render content. React renders content to the browser's DOM (Document Object Model). React Native does not use the DOM. Instead, it connects to native mobile APIs and renders real mobile UI components on the device.
 
 The fourth difference is styling. React uses regular CSS files to style web pages. React Native does not use traditional CSS. Instead, it uses JavaScript objects to style components directly within the app.
 
@@ -87,4 +87,3 @@ The fourth difference is styling. React uses regular CSS files to style web page
 
 ## Project Structure
 [Will be updated as project develops]
-```
