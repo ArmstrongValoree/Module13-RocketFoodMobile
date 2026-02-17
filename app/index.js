@@ -1,42 +1,41 @@
-import { useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
-  View,
+  Image,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Image,
-  ScrollView,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+  View,
+} from "react-native";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = async () => {
     try {
-      setError('');
-      const response = await axios.post(`${API_URL}/api/auth/login`, {
+      setError("");
+      const response = await axios.post(`${API_URL}/api/auth`, {
         email,
         password,
       });
 
-      const { token, id, customer_id } = response.data;
+      const { accessToken, user_id, customer_id } = response.data;
 
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('userId', String(id));
-      await AsyncStorage.setItem('customerId', String(customer_id));
+      await AsyncStorage.setItem("token", accessToken || "temp-token");
+      await AsyncStorage.setItem("userId", String(user_id));
 
-      router.replace('/customer/restaurant/list');
+      router.replace("/customer/restaurant/list");
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      setError("Invalid email or password. Please try again.");
     }
   };
 
@@ -44,7 +43,7 @@ export default function LoginScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.logoContainer}>
         <Image
-          source={require('../assets/images/rocket-logo.png')}
+          source={require("../assets/images/rocket-logo.png")}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -75,14 +74,9 @@ export default function LoginScreen() {
           secureTextEntry
         />
 
-        {error ? (
-          <Text style={styles.errorText}>{error}</Text>
-        ) : null}
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={handleLogin}
-        >
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>LOG IN</Text>
         </TouchableOpacity>
       </View>
@@ -93,13 +87,13 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#222126',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#222126",
+    alignItems: "center",
+    justifyContent: "center",
     padding: 20,
   },
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
   },
   logo: {
@@ -107,59 +101,59 @@ const styles = StyleSheet.create({
     height: 120,
   },
   formContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     padding: 20,
-    width: '100%',
+    width: "100%",
     maxWidth: 400,
   },
   title: {
-    fontFamily: 'Arial',
+    fontFamily: "Arial",
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#222126',
+    fontWeight: "bold",
+    color: "#222126",
     marginBottom: 4,
   },
   subtitle: {
-    fontFamily: 'Arial',
+    fontFamily: "Arial",
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
   },
   label: {
-    fontFamily: 'Arial',
+    fontFamily: "Arial",
     fontSize: 14,
-    color: '#222126',
+    color: "#222126",
     marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: "#DDD",
     borderRadius: 6,
     padding: 10,
     fontSize: 14,
-    fontFamily: 'Arial',
-    color: '#222126',
+    fontFamily: "Arial",
+    color: "#222126",
     marginBottom: 16,
   },
   errorText: {
-    color: '#DA583B',
-    fontFamily: 'Arial',
+    color: "#DA583B",
+    fontFamily: "Arial",
     fontSize: 13,
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   loginButton: {
-    backgroundColor: '#DA583B',
+    backgroundColor: "#DA583B",
     borderRadius: 6,
     padding: 14,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 4,
   },
   loginButtonText: {
-    color: '#FFFFFF',
-    fontFamily: 'Arial',
+    color: "#FFFFFF",
+    fontFamily: "Arial",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
