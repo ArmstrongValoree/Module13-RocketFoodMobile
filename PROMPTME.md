@@ -1,4 +1,4 @@
-# Module X – Module's Name
+# Module 13 – Mobile Development 1
 
 > 🚨 **Replace `X` with your module number and `Module's Name` with the actual module name.**
 
@@ -22,13 +22,91 @@
 
 ## ✏️ Prompt - 01
 
-**📎 Context:** Write what you were working on here
+**📎 Context:** Lombok Compilation Errors in Backend Code
 
-Paste your prompt or question here
+I am currently have errors with the lombok. Explain how to fix it. I will add context from another AI model. Backend Has Broken Code - This Is a Provided Backend Issue
+
+Critical Decision Point
+The provided backend has 100 compilation errors because Lombok annotations aren't generating getter/setter methods. This is NOT something you can fix quickly - the backend code itself has issues.
+You have 2 options:
+
+Option 1: Contact Your Coach (RECOMMENDED)
+Action: Message your coach immediately with:
+"The Module 13 backend server (serverJAVA.zip) has 100 Lombok compilation errors and won't start. 
+All model classes are missing generated getter/setter methods. 
+Do you have an updated backend or should I proceed with the mobile app using mock data?"
+Why this is best: The backend is provided material and should work out-of-the-box. Your coach likely has a fix or updated version.
+
+Option 2: Proceed with Mobile App Using Mock Data (Temporary)
+Action: Build the mobile app with hardcoded test data instead of real API calls, then connect the API later once the backend is fixed.
+Pros:
+
+You can still complete the UI requirements (Login Page, Restaurants, Menu, etc.)
+Learn React Native concepts
+Switch to real API later with minimal changes
+
+Cons:
+
+Won't complete the full integration initially
+Need to refactor later
+
+
+My Recommendation
+Contact your coach first. Given that you have 4 days total and have already spent significant time on backend setup, it's critical to get clarification NOW rather than waste more time.
+Meanwhile, I can help you:
+
+Start building the mobile app Login Page with mock data
+Set up the basic navigation structure
+Create reusable components
+
+This way you're making progress while waiting for coach response.
+
+Which option do you want to proceed with?
+
+Contact coach and start mobile app with mock data
+Keep trying to fix backend (not recommended - this could take hours/days)
 
 ## 🤖 Response - 01
 
-Paste the AI's answer here
+Summary: Lombok Issue & Recommendation
+Based on the analysis from your other AI model and my verification of your project, here's the situation:
+
+What is the Lombok Issue?
+Lombok is a library that automatically generates getter/setter methods using annotations like @Getter, @Setter, and @AllArgsConstructor. When Lombok fails to configure properly:
+
+Annotations aren't processed during compilation
+Generated methods (getters/setters) don't exist
+Compiler throws 100+ "cannot find symbol" errors when code tries to call these non-existent methods
+This is a build configuration problem, not a code problem
+Why I Recommend Option 1 (Contact Coach + Mock Data)
+Your situation:
+
+You currently have NO Java source files in the backend
+The backend appears to need extraction/setup
+You're on a 4-day timeline - spending days troubleshooting a provided backend defeats the project purpose
+Your mobile app doesn't require the live backend to start development
+Best Action Plan:
+
+📧 Message your coach immediately:
+
+⏳ While waiting for response, I can help you:
+
+Build the mobile app UI with mock data (Login, Restaurants, Menu)
+Set up navigation structure
+Create reusable components
+Later: Switch to live API with minimal code changes
+Why this saves time:
+
+Fix the root issue (not your responsibility if backend is provided)
+Keep momentum on mobile development
+Demonstrate mobile app competency regardless of backend status
+Ready to start? I can help you set up:
+
+Mock data service for restaurants/menu items
+Login page with mock authentication
+Navigation structure (tabs, screens)
+API service layer ready to swap to real backend later
+Which would you like to start with?
 
 ---
 
