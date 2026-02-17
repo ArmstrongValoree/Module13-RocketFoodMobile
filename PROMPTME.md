@@ -112,13 +112,36 @@ Which would you like to start with?
 
 ## ✏️ Prompt - 02
 
-**📎 Context:** Write what you were working on here
+**📎 Context:** ngrok Tunnel Issue
 
-Paste your prompt or question here
+armstrongvaloree@HorriblyAwesome:~/CodeBoxx/Module13-RocketFoodMobile$ cd ~/CodeBoxx/Module13-RocketFoodMobile
+npx expo start --tunnel --clear
+env: load .env
+env: export EXPO_PUBLIC_API_URL
+Starting project at /home/armstrongvaloree/CodeBoxx/Module13-RocketFoodMobile
+React Compiler enabled
+Starting Metro Bundler
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+CommandError: TypeError: Cannot read properties of undefined (reading 'body')
+Check the Ngrok status page for outages: https://status.ngrok.com/
 
 ## 🤖 Response - 02
 
-Paste the AI's answer here
+This is a known Expo tunnel/ngrok connectivity issue. The error suggests ngrok isn't responding properly. Let's fix it:
+
+Step 1: Verify ngrok status (already in error message - check https://status.ngrok.com/)
+
+Step 2: Try these fixes in order:
+
+Step 3: If that fails, use localhost tunnel instead (more reliable):
+
+Step 4: If you absolutely need ngrok tunnel, update Expo CLI:
+
+Step 5: Last resort - configure ngrok directly:
+
+Quick test: Does --localhost mode work?
+
+If localhost works, your app is fine - it's just the tunnel service having issues. You can still test locally on your device using Expo Go and the local connection.
 
 ---
 
