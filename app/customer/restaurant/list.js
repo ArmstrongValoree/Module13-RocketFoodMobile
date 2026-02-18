@@ -105,7 +105,7 @@ export default function RestaurantListScreen() {
         <Text style={styles.filterLabel}>Rating:</Text>
         <View style={styles.filterRow}>
           <FilterButton
-            title="All"
+            title="Select"
             onPress={() => setSelectedRating(null)}
             isSelected={selectedRating === null}
           />
@@ -123,7 +123,7 @@ export default function RestaurantListScreen() {
         <Text style={styles.filterLabel}>Price Range:</Text>
         <View style={styles.filterRow}>
           <FilterButton
-            title="All"
+            title="Select"
             onPress={() => setSelectedPrice(null)}
             isSelected={selectedPrice === null}
           />

@@ -233,12 +233,17 @@ export default function RestaurantMenuScreen() {
               <>
                 <Text style={styles.errorIcon}>✗</Text>
                 <Text style={styles.modalText}>Order Failed</Text>
-                <Text style={styles.modalSubtext}>Please try again.</Text>
+                <Text style={styles.modalSubtext}>
+                  An error occurred while processing your order.
+                </Text>
                 <TouchableOpacity
-                  style={styles.retryButton}
-                  onPress={handleCreateOrder}
+                  style={styles.confirmButton}
+                  onPress={() => {
+                    setModalVisible(false);
+                    setOrderStatus(null);
+                  }}
                 >
-                  <Text style={styles.retryButtonText}>Retry</Text>
+                  <Text style={styles.confirmButtonText}>Confirm Order</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -392,6 +397,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFFFFF",
   },
+  confirmButton: {
+    backgroundColor: "#DA583B",
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 6,
+    marginTop: 16,
+  },
+  confirmButtonText: {
+    fontFamily: "Arial",
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -426,19 +444,6 @@ const styles = StyleSheet.create({
   },
   errorIcon: {
     fontSize: 48,
-    color: "#DA583B",
-  },
-  retryButton: {
-    backgroundColor: "#DA583B",
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 6,
-    marginTop: 16,
-  },
-  retryButtonText: {
-    fontFamily: "Arial",
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#FFFFFF",
+    color: "#851919",
   },
 });
