@@ -11,7 +11,6 @@ import {
   View,
 } from "react-native";
 import { restaurantService } from "../../../services/restaurantService";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function RestaurantListScreen() {
   const router = useRouter();
