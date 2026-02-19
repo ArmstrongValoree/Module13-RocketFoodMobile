@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { orderService } from "../../../services/orderService";
 import { productService } from "../../../services/productService";
 import { restaurantService } from "../../../services/restaurantService";
 
@@ -75,18 +76,16 @@ export default function RestaurantMenuScreen() {
     setOrderStatus("loading");
 
     try {
-      // Simulate API call (we'll implement real order creation later)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const orderProducts = products
+        .filter((p) => quantities[p.id] > 0)
+        .map((p) => ({ id: p.id, quantity: quantities[p.id] }));
 
-      // For now, just show success
+      await orderService.createOrder(restaurantId, orderProducts);
       setOrderStatus("success");
 
-      // Reset quantities after 2 seconds
       setTimeout(() => {
         const resetQuantities = {};
-        products.forEach((product) => {
-          resetQuantities[product.id] = 0;
-        });
+        products.forEach((product) => (resetQuantities[product.id] = 0));
         setQuantities(resetQuantities);
         setModalVisible(false);
         setOrderStatus(null);

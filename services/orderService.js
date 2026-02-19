@@ -6,28 +6,36 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
 export const orderService = {
   async createOrder(restaurantId, products) {
     try {
-      const customerId = await AsyncStorage.getItem("customerId");
+      const customerId = await AsyncStorage.getItem("customer_id");
 
       const orderData = {
         restaurant_id: parseInt(restaurantId),
         customer_id: parseInt(customerId),
         products: products.map((p) => ({
-          product_id: p.id,
+          id: p.id,
           quantity: p.quantity,
         })),
       };
 
+      console.log(
+        "Creating order with data:",
+        JSON.stringify(orderData, null, 2),
+      );
+
       const response = await axios.post(`${API_URL}/api/orders`, orderData);
       return response.data;
     } catch (error) {
-      console.error("Error creating order:", error);
+      console.error(
+        "Order creation error:",
+        error.response?.data || error.message,
+      );
       throw error;
     }
-  },
+  }, // ← ADD COMMA HERE
 
   async getOrderHistory() {
     try {
-      const customerId = await AsyncStorage.getItem("customerId");
+      const customerId = await AsyncStorage.getItem("customer_id");
       const response = await axios.get(
         `${API_URL}/api/orders?customer_id=${customerId}`,
       );

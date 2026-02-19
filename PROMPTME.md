@@ -147,13 +147,39 @@ If localhost works, your app is fine - it's just the tunnel service having issue
 
 ## ✏️ Prompt - 03
 
-**📎 Context:** Write what you were working on here
-
-Paste your prompt or question here
+**📎 Context:** Analyze the following ngrok error message:armstrongvaloree@HorriblyAwesome:~/CodeBoxx/Module13-RocketFoodMobile$ cd ~/CodeBoxx/Module13-RocketFoodMobile
+echo "EXPO_PUBLIC_API_URL=https://unvolunteering-yasmin-reportedly.ngrok-free.dev" > .env
+npx expo start --tunnel --clear
+env: load .env
+env: export EXPO_PUBLIC_API_URL
+Starting project at /home/armstrongvaloree/CodeBoxx/Module13-RocketFoodMobile
+React Compiler enabled
+Starting Metro Bundler
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+CommandError: TypeError: Cannot read properties of undefined (reading 'body')
+Check the Ngrok status page for outages: https://status.ngrok.com/
 
 ## 🤖 Response - 03
 
-Paste the AI's answer here
+This is an ngrok connectivity issue, not your code. The tunnel service is having problems. Here are your options:
+
+Option 1: Use Localhost Mode (Recommended for Testing)
+This starts the app locally without tunneling. Works great for development.
+
+Option 2: Update Expo CLI & Try Again
+Option 3: Skip Tunnel, Use Direct IP
+Gets your machine's local IP address for device testing on the same network.
+
+Option 4: Use a Different Tunnel Service
+If you need external access, consider alternatives to ngrok (which has been unreliable lately):
+
+Localtunnel - npm install -g localtunnel
+CloudFlare Tunnel - More stable than ngrok
+Tailscale - VPN-based solution
+My Recommendation:
+Since you're testing locally, use --localhost mode. Once your backend is deployed to production, the ngrok URL won't be needed anyway—you'll just use your actual server's URL.
+
+Try this and let me know if the Metro bundler starts successfully!
 
 ---
 

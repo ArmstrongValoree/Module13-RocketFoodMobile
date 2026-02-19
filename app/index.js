@@ -28,17 +28,18 @@ export default function LoginScreen() {
         password,
       });
 
-      const { accessToken, user_id, customer_id } = response.data;
+      const { accessToken, user_id, customer_id, courier_id } = response.data;
 
-      await AsyncStorage.setItem("token", accessToken || "temp-token");
-      await AsyncStorage.setItem("userId", String(user_id));
+      await AsyncStorage.setItem("accessToken", accessToken || "temp-token");
+      await AsyncStorage.setItem("user_id", String(user_id));
+      await AsyncStorage.setItem("customer_id", String(customer_id));
+      await AsyncStorage.setItem("courier_id", String(courier_id));
 
       router.replace("/customer/restaurant/list");
     } catch (err) {
       setError("Invalid email or password. Please try again.");
     }
   };
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.logoContainer}>

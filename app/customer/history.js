@@ -1,5 +1,6 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";  
 import {
   ActivityIndicator,
   FlatList,
@@ -18,10 +19,11 @@ export default function OrderHistoryScreen() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {  // ← Change to useCallback (no React.)
+      fetchOrders();
+    }, []),
+  );
   const fetchOrders = async () => {
     try {
       setLoading(true);
