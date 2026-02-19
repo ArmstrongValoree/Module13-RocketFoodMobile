@@ -75,6 +75,7 @@ com/rocketFoodDelivery/rocketFood/dtos/ApiResponseStatusDTO.class
 com/rocketFoodDelivery/rocketFood/repository/OrderRepository.class
 com/rocketFoodDelivery/rocketFood/repository/ProductRepository.class
 com/rocketFoodDelivery/rocketFood/security/JwtTokenFilter.class
+com/rocketFoodDelivery/rocketFood/dtos/ApiResponse.class
 com/rocketFoodDelivery/rocketFood/dtos/ApiAddressDTO.class
 com/rocketFoodDelivery/rocketFood/service/CourierStatusService.class
 com/rocketFoodDelivery/rocketFood/dtos/ApiProductForOrderApiDTO.class
