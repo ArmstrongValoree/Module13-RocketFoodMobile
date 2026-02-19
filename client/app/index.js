@@ -16,8 +16,8 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("both@gmail.com");
+  const [password, setPassword] = useState("password");
   const [error, setError] = useState("");
 
   /**
@@ -74,6 +74,7 @@ export default function LoginScreen() {
       await AsyncStorage.setItem("user_id", String(user_id));
       await AsyncStorage.setItem("customer_id", String(customer_id));
       await AsyncStorage.setItem("courier_id", String(courier_id));
+      await AsyncStorage.setItem("type", String("customer"));
 
       router.replace("/customer/restaurant/list");
     } catch (err) {

@@ -3,5 +3,8 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+  },
+  "java.jdt.ls.lombokSupport.enabled": true,
+  "snyk.advanced.autoSelectOrganization": true,
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
