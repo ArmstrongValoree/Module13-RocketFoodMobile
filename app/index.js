@@ -20,9 +20,49 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  /**
+   * Validates login form fields
+   * @returns {boolean} True if valid, false otherwise
+   */
+  const validateForm = () => {
+    // Check if email is empty
+    if (!email.trim()) {
+      setError("Email is required");
+      return false;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+
+    // Check if password is empty
+    if (!password) {
+      setError("Password is required");
+      return false;
+    }
+
+    // Check password length
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleLogin = async () => {
+    // Clear previous errors
+    setError("");
+
+    // Validate form before sending
+    if (!validateForm()) {
+      return;
+    }
+
     try {
-      setError("");
       const response = await axios.post(`${API_URL}/api/auth`, {
         email,
         password,
@@ -40,6 +80,7 @@ export default function LoginScreen() {
       setError("Invalid email or password. Please try again.");
     }
   };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.logoContainer}>
