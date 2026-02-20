@@ -78,22 +78,41 @@ export default function RestaurantMenuScreen() {
     try {
       const orderProducts = products
         .filter((p) => quantities[p.id] > 0)
-        .map((p) => ({ id: p.id, quantity: quantities[p.id] }));
+        .map((p) => ({
+          id: p.id,
+          quantity: quantities[p.id],
+          name: p.name,
+          cost: p.cost,
+        }));
 
-      await orderService.createOrder(restaurantId, orderProducts);
+      await orderService.createOrder(
+        restaurantId,
+        orderProducts.map((p) => ({ id: p.id, quantity: p.quantity })),
+      );
       setOrderStatus("success");
-
-      setTimeout(() => {
-        const resetQuantities = {};
-        products.forEach((product) => (resetQuantities[product.id] = 0));
-        setQuantities(resetQuantities);
-        setModalVisible(false);
-        setOrderStatus(null);
-      }, 2000);
     } catch (error) {
       console.error("Order creation failed:", error);
       setOrderStatus("error");
     }
+  };
+
+  const getOrderSummary = () => {
+    return products
+      .filter((p) => quantities[p.id] > 0)
+      .map((p) => ({
+        name: p.name,
+        quantity: quantities[p.id],
+        cost: p.cost,
+        total: p.cost * quantities[p.id],
+      }));
+  };
+
+  const closeModalAndReset = () => {
+    const resetQuantities = {};
+    products.forEach((product) => (resetQuantities[product.id] = 0));
+    setQuantities(resetQuantities);
+    setModalVisible(false);
+    setOrderStatus(null);
   };
 
   const renderProduct = ({ item }) => {
@@ -249,6 +268,93 @@ export default function RestaurantMenuScreen() {
           </View>
         </View>
       </Modal>
+      {/* Order Confirmation Modal */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => {
+          if (orderStatus !== "loading") {
+            closeModalAndReset();
+          }
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Order Confirmation</Text>
+              {orderStatus !== "loading" && (
+                <TouchableOpacity onPress={closeModalAndReset}>
+                  <Text style={styles.closeButton}>✕</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Order Summary */}
+            <View style={styles.orderSummarySection}>
+              <Text style={styles.summaryTitle}>Order Summary</Text>
+              {getOrderSummary().map((item, index) => (
+                <View key={index} style={styles.summaryRow}>
+                  <Text style={styles.summaryItem}>{item.name}</Text>
+                  <Text style={styles.summaryQuantity}>x{item.quantity}</Text>
+                  <Text style={styles.summaryPrice}>
+                    ${item.total.toFixed(2)}
+                  </Text>
+                </View>
+              ))}
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>TOTAL:</Text>
+                <Text style={styles.totalAmount}>
+                  ${getTotalCost().toFixed(2)}
+                </Text>
+              </View>
+            </View>
+
+            {/* Status Messages */}
+            {orderStatus === "loading" && (
+              <View style={styles.statusSection}>
+                <ActivityIndicator size="large" color="#DA583B" />
+                <Text style={styles.statusText}>Processing order...</Text>
+              </View>
+            )}
+
+            {orderStatus === "success" && (
+              <View style={styles.statusSection}>
+                <View style={styles.successIconContainer}>
+                  <Text style={styles.successIcon}>✓</Text>
+                </View>
+                <Text style={styles.successTitle}>Thank you!</Text>
+                <Text style={styles.successMessage}>
+                  Your order has been received.
+                </Text>
+              </View>
+            )}
+
+            {orderStatus === "error" && (
+              <View style={styles.statusSection}>
+                <View style={styles.errorIconContainer}>
+                  <Text style={styles.errorIcon}>✗</Text>
+                </View>
+                <Text style={styles.errorMessage}>
+                  Your order was not processed successfully.{"\n"}
+                  Please try again.
+                </Text>
+              </View>
+            )}
+
+            {/* Confirm Button (only show when not loading) */}
+            {orderStatus !== "loading" && (
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={closeModalAndReset}
+              >
+                <Text style={styles.confirmButtonText}>CONFIRM ORDER</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -256,7 +362,7 @@ export default function RestaurantMenuScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F5F5F5", // Light gray background
   },
   centerContainer: {
     flex: 1,
@@ -414,35 +520,163 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
   },
   modalContent: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 32,
-    alignItems: "center",
-    minWidth: 280,
+    borderRadius: 8,
+    width: "100%",
+    maxWidth: 400,
+    maxHeight: "80%",
   },
-  modalText: {
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#222126",
+    padding: 16,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  modalTitle: {
+    fontFamily: "Arial",
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+  },
+  closeButton: {
+    fontSize: 24,
+    color: "#FFFFFF",
+    fontWeight: "bold",
+  },
+  orderSummarySection: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+  },
+  summaryTitle: {
+    fontFamily: "Arial",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#222126",
+    marginBottom: 12,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  summaryItem: {
+    fontFamily: "Arial",
+    fontSize: 14,
+    color: "#222126",
+    flex: 2,
+  },
+  summaryQuantity: {
+    fontFamily: "Arial",
+    fontSize: 14,
+    color: "#666",
+    flex: 1,
+    textAlign: "center",
+  },
+  summaryPrice: {
+    fontFamily: "Arial",
+    fontSize: 14,
+    color: "#222126",
+    flex: 1,
+    textAlign: "right",
+  },
+  totalRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#E0E0E0",
+  },
+  totalLabel: {
+    fontFamily: "Arial",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#222126",
+  },
+  totalAmount: {
+    fontFamily: "Arial",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#222126",
+  },
+  statusSection: {
+    padding: 20,
+    alignItems: "center",
+  },
+  statusText: {
+    fontFamily: "Arial",
+    fontSize: 14,
+    color: "#666",
+    marginTop: 12,
+  },
+  successIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#609475",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  successIcon: {
+    fontSize: 36,
+    color: "#FFFFFF",
+    fontWeight: "bold",
+  },
+  successTitle: {
     fontFamily: "Arial",
     fontSize: 18,
     fontWeight: "bold",
     color: "#222126",
-    marginTop: 16,
-    textAlign: "center",
+    marginBottom: 8,
   },
-  modalSubtext: {
+  successMessage: {
     fontFamily: "Arial",
     fontSize: 14,
     color: "#666",
-    marginTop: 8,
     textAlign: "center",
   },
-  successIcon: {
-    fontSize: 48,
-    color: "#609475",
+  errorIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#851919",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
   },
   errorIcon: {
-    fontSize: 48,
-    color: "#851919",
+    fontSize: 36,
+    color: "#FFFFFF",
+    fontWeight: "bold",
+  },
+  errorMessage: {
+    fontFamily: "Arial",
+    fontSize: 14,
+    color: "#666",
+    textAlign: "center",
+  },
+  confirmButton: {
+    backgroundColor: "#DA583B",
+    padding: 16,
+    margin: 20,
+    marginTop: 0,
+    borderRadius: 4,
+    alignItems: "center",
+  },
+  confirmButtonText: {
+    fontFamily: "Arial",
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    letterSpacing: 0.5,
   },
 });
