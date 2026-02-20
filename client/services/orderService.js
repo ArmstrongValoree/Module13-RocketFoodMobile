@@ -1,11 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 /**
  * Service for handling order-related API calls
- * All responses follow standard format: { success, data, message, statusCode }
  */
 export const orderService = {
   /**
@@ -27,10 +25,7 @@ export const orderService = {
         })),
       };
 
-      console.log(
-        "Creating order with data:",
-        JSON.stringify(orderData, null, 2),
-      );
+      console.log("Creating order with data:", JSON.stringify(orderData, null, 2));
 
       const response = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
@@ -39,13 +34,15 @@ export const orderService = {
         },
         body: JSON.stringify(orderData),
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
-      return data; // Server returns the order object directly
+      return data;
     } catch (error) {
-      console.error(
-        "Order creation error:",
-        error.response?.data || error.message,
-      );
+      console.error("Order creation error:", error.message);
       throw error;
     }
   },
@@ -57,14 +54,26 @@ export const orderService = {
   async getOrderHistory() {
     try {
       const customerId = await AsyncStorage.getItem("customer_id");
-      const type = await AsyncStorage.getItem("type");
-      console.log(
-        `Fetching order history for customer_id=${customerId} with type=${type}`,
-      );
-      const response = await axios.get(
+      const type = "customer";
+      
+      console.log(`Fetching order history for customer_id=${customerId} with type=${type}`);
+      
+      const response = await fetch(
         `${API_URL}/api/orders?type=${type}&id=${customerId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      return response.data; // Extract orders array from wrapper
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error("Error fetching order history:", error);
       throw error;
@@ -78,10 +87,19 @@ export const orderService = {
    */
   async getOrderById(orderId) {
     try {
-      const response = await axios.get(`${API_URL}/api/orders/${orderId}`);
-
-      // Standardized: response.data contains { success, data, message, statusCode }
-      return response.data.data; // Extract order from wrapper
+      const response = await fetch(`${API_URL}/api/orders/${orderId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error("Error fetching order:", error);
       throw error;

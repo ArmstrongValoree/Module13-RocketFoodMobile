@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -54,33 +53,46 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-    // Clear previous errors
-    setError("");
+  // Clear previous errors
+  setError("");
 
-    // Validate form before sending
-    if (!validateForm()) {
-      return;
-    }
+  // Validate form before sending
+  if (!validateForm()) {
+    return;
+  }
 
-    try {
-      const response = await axios.post(`${API_URL}/api/auth`, {
+  try {
+    const response = await fetch(`${API_URL}/api/auth`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         email,
         password,
-      });
+      }),
+    });
 
-      const { accessToken, user_id, customer_id, courier_id } = response.data;
-
-      await AsyncStorage.setItem("accessToken", accessToken || "temp-token");
-      await AsyncStorage.setItem("user_id", String(user_id));
-      await AsyncStorage.setItem("customer_id", String(customer_id));
-      await AsyncStorage.setItem("courier_id", String(courier_id));
-      await AsyncStorage.setItem("type", String("customer"));
-
-      router.replace("/customer/restaurant/list");
-    } catch (err) {
-      setError("Invalid email or password. Please try again.");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  };
+
+    const data = await response.json();
+    const { accessToken, user_id, customer_id, courier_id } = data;
+
+    // Store with EXACT key names from API
+    await AsyncStorage.setItem("accessToken", accessToken || "temp-token");
+    await AsyncStorage.setItem("user_id", String(user_id));
+    await AsyncStorage.setItem("customer_id", String(customer_id));
+    await AsyncStorage.setItem("courier_id", String(courier_id));
+    await AsyncStorage.setItem("type", String("customer"));
+
+    router.replace("/customer/restaurant/list");
+  } catch (err) {
+    console.error("Login error:", err);
+    setError("Invalid email or password. Please try again.");
+  }
+};
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
