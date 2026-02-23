@@ -1,12 +1,12 @@
-import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 // This screen appears only when a user has BOTH customer and courier accounts.
@@ -15,13 +15,15 @@ import {
 export default function SelectionScreen() {
   const router = useRouter();
 
-  // Navigate to the customer app
-  const goToCustomer = () => {
+  // Save customer role and navigate to customer app
+  const goToCustomer = async () => {
+    await AsyncStorage.setItem("type", "customer");
     router.replace("/customer/restaurant/list");
   };
 
-  // Navigate to the courier app
-  const goToCourier = () => {
+  // Save courier role and navigate to courier app
+  const goToCourier = async () => {
+    await AsyncStorage.setItem("type", "courier");
     router.replace("/courier/deliveries");
   };
 

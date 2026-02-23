@@ -26,6 +26,8 @@ export default function RestaurantMenuScreen() {
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [orderStatus, setOrderStatus] = useState(null); // 'loading', 'success', 'error'
+  const [sendEmail, setSendEmail] = useState(false);
+  const [sendSMS, setSendSMS] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -88,6 +90,8 @@ export default function RestaurantMenuScreen() {
       await orderService.createOrder(
         restaurantId,
         orderProducts.map((p) => ({ id: p.id, quantity: p.quantity })),
+        sendEmail,
+        sendSMS,
       );
       setOrderStatus("success");
     } catch (error) {
@@ -230,6 +234,46 @@ export default function RestaurantMenuScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
+            {/* Notification Options */}
+            {!orderStatus && (
+              <View style={styles.notificationSection}>
+                <Text style={styles.notificationTitle}>
+                  Would you like to receive your order confirmation by email
+                  and/or text?
+                </Text>
+
+                {/* By Email Checkbox */}
+                <TouchableOpacity
+                  style={styles.checkboxRow}
+                  onPress={() => setSendEmail(!sendEmail)}
+                >
+                  <View
+                    style={[
+                      styles.checkbox,
+                      sendEmail && styles.checkboxChecked,
+                    ]}
+                  >
+                    {sendEmail && <Text style={styles.checkmark}>✓</Text>}
+                  </View>
+                  <Text style={styles.checkboxLabel}>By Email</Text>
+                </TouchableOpacity>
+
+                {/* By Phone Checkbox */}
+                <TouchableOpacity
+                  style={styles.checkboxRow}
+                  onPress={() => setSendSMS(!sendSMS)}
+                >
+                  <View
+                    style={[styles.checkbox, sendSMS && styles.checkboxChecked]}
+                  >
+                    {sendSMS && <Text style={styles.checkmark}>✓</Text>}
+                  </View>
+                  <Text style={styles.checkboxLabel}>By Phone</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Status Messages */}
             {orderStatus === "loading" && (
               <>
                 <ActivityIndicator size="large" color="#DA583B" />
@@ -254,14 +298,25 @@ export default function RestaurantMenuScreen() {
                 <Text style={styles.modalSubtext}>
                   An error occurred while processing your order.
                 </Text>
+                {/* Confirm Button */}
+                {/* Disabled with 'In Progress' text while waiting for API response */}
                 <TouchableOpacity
-                  style={styles.confirmButton}
-                  onPress={() => {
-                    setModalVisible(false);
-                    setOrderStatus(null);
-                  }}
+                  style={[
+                    styles.confirmButton,
+                    orderStatus === "loading" && styles.disabledButton,
+                  ]}
+                  onPress={
+                    orderStatus === null
+                      ? handleCreateOrder
+                      : closeModalAndReset
+                  }
+                  disabled={orderStatus === "loading"}
                 >
-                  <Text style={styles.confirmButtonText}>Confirm Order</Text>
+                  <Text style={styles.confirmButtonText}>
+                    {orderStatus === "loading"
+                      ? "In Progress"
+                      : "CONFIRM ORDER"}
+                  </Text>
                 </TouchableOpacity>
               </>
             )}
@@ -269,92 +324,6 @@ export default function RestaurantMenuScreen() {
         </View>
       </Modal>
       {/* Order Confirmation Modal */}
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => {
-          if (orderStatus !== "loading") {
-            closeModalAndReset();
-          }
-        }}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            {/* Modal Header */}
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Order Confirmation</Text>
-              {orderStatus !== "loading" && (
-                <TouchableOpacity onPress={closeModalAndReset}>
-                  <Text style={styles.closeButton}>✕</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-
-            {/* Order Summary */}
-            <View style={styles.orderSummarySection}>
-              <Text style={styles.summaryTitle}>Order Summary</Text>
-              {getOrderSummary().map((item, index) => (
-                <View key={index} style={styles.summaryRow}>
-                  <Text style={styles.summaryItem}>{item.name}</Text>
-                  <Text style={styles.summaryQuantity}>x{item.quantity}</Text>
-                  <Text style={styles.summaryPrice}>
-                    ${item.total.toFixed(2)}
-                  </Text>
-                </View>
-              ))}
-              <View style={styles.totalRow}>
-                <Text style={styles.totalLabel}>TOTAL:</Text>
-                <Text style={styles.totalAmount}>
-                  ${getTotalCost().toFixed(2)}
-                </Text>
-              </View>
-            </View>
-
-            {/* Status Messages */}
-            {orderStatus === "loading" && (
-              <View style={styles.statusSection}>
-                <ActivityIndicator size="large" color="#DA583B" />
-                <Text style={styles.statusText}>Processing order...</Text>
-              </View>
-            )}
-
-            {orderStatus === "success" && (
-              <View style={styles.statusSection}>
-                <View style={styles.successIconContainer}>
-                  <Text style={styles.successIcon}>✓</Text>
-                </View>
-                <Text style={styles.successTitle}>Thank you!</Text>
-                <Text style={styles.successMessage}>
-                  Your order has been received.
-                </Text>
-              </View>
-            )}
-
-            {orderStatus === "error" && (
-              <View style={styles.statusSection}>
-                <View style={styles.errorIconContainer}>
-                  <Text style={styles.errorIcon}>✗</Text>
-                </View>
-                <Text style={styles.errorMessage}>
-                  Your order was not processed successfully.{"\n"}
-                  Please try again.
-                </Text>
-              </View>
-            )}
-
-            {/* Confirm Button (only show when not loading) */}
-            {orderStatus !== "loading" && (
-              <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={closeModalAndReset}
-              >
-                <Text style={styles.confirmButtonText}>CONFIRM ORDER</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -678,5 +647,47 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFFFFF",
     letterSpacing: 0.5,
+  },
+  notificationSection: {
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#E0E0E0",
+  },
+  notificationTitle: {
+    fontFamily: "Arial",
+    fontSize: 13,
+    color: "#222126",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    justifyContent: "center",
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: "#cccccc",
+    borderRadius: 3,
+    marginRight: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkboxChecked: {
+    backgroundColor: "#DA583B",
+    borderColor: "#DA583B",
+  },
+  checkmark: {
+    color: "#ffffff",
+    fontSize: 13,
+    fontWeight: "bold",
+  },
+  checkboxLabel: {
+    fontFamily: "Arial",
+    fontSize: 14,
+    color: "#222126",
   },
 });
