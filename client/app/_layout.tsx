@@ -8,6 +8,8 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="customer" />
+          <Stack.Screen name="selection" />
+          <Stack.Screen name="courier" />
         </Stack>
       </SafeAreaView>
     </SafeAreaProvider>
