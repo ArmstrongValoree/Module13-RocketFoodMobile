@@ -53,46 +53,64 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-  // Clear previous errors
-  setError("");
+    // Clear previous errors
+    setError("");
 
-  // Validate form before sending
-  if (!validateForm()) {
-    return;
-  }
-
-  try {
-    const response = await fetch(`${API_URL}/api/auth`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // Validate form before sending
+    if (!validateForm()) {
+      return;
     }
 
-    const data = await response.json();
-    const { accessToken, user_id, customer_id, courier_id } = data;
+    try {
+      const response = await fetch(`${API_URL}/api/auth`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    // Store with EXACT key names from API
-    await AsyncStorage.setItem("accessToken", accessToken || "temp-token");
-    await AsyncStorage.setItem("user_id", String(user_id));
-    await AsyncStorage.setItem("customer_id", String(customer_id));
-    await AsyncStorage.setItem("courier_id", String(courier_id));
-    await AsyncStorage.setItem("type", String("customer"));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-    router.replace("/customer/restaurant/list");
-  } catch (err) {
-    console.error("Login error:", err);
-    setError("Invalid email or password. Please try again.");
-  }
-};
+      const data = await response.json();
+      const { accessToken, user_id, customer_id, courier_id } = data;
+
+      // Store credentials from API response
+      await AsyncStorage.setItem("accessToken", accessToken || "temp-token");
+      await AsyncStorage.setItem("user_id", String(user_id));
+      await AsyncStorage.setItem("customer_id", String(customer_id));
+      await AsyncStorage.setItem("courier_id", String(courier_id));
+
+      // Determine which app to navigate to based on roles
+      // hasCustomer is true if the API returned a real customer_id (not null/undefined)
+      // hasCourier is true if the API returned a real courier_id (not null/undefined)
+      const hasCustomer = customer_id !== null && customer_id !== undefined;
+      const hasCourier = courier_id !== null && courier_id !== undefined;
+
+      if (hasCustomer && hasCourier) {
+        // Scenario 3: User has both accounts — go to selection page
+        router.replace("/selection");
+      } else if (hasCustomer) {
+        // Scenario 1: Customer only — go directly to customer app
+        await AsyncStorage.setItem("type", "customer");
+        router.replace("/customer/restaurant/list");
+      } else if (hasCourier) {
+        // Scenario 2: Courier only — go directly to courier app
+        await AsyncStorage.setItem("type", "courier");
+        router.replace("/courier/deliveries");
+      } else {
+        // No valid role found
+        setError("No account role found. Please contact support.");
+      }
+    } catch (err) {
+      setError(err.message || "Login failed. Please try again.");
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
