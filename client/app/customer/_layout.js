@@ -1,9 +1,13 @@
 import {
-    faClockRotateLeft,
-    faUtensils,
+  faClockRotateLeft,
+  faUser,
+  faUtensils,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Tabs } from "expo-router";
+
+// Customer app tab navigation
+// Contains three tabs: Restaurants, Order History, Account
 
 export default function CustomerLayout() {
   return (
@@ -38,6 +42,15 @@ export default function CustomerLayout() {
           title: "Order History",
           tabBarIcon: ({ color }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={20} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: "Account",
+          tabBarIcon: ({ color }) => (
+            <FontAwesomeIcon icon={faUser} color={color} size={20} />
           ),
         }}
       />
