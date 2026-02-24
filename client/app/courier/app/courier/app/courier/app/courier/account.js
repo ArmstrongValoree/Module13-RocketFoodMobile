@@ -1,14 +1,17 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 // Courier Account Page
 // Displays user email (read-only), courier email, and courier phone (both editable)
@@ -18,21 +21,98 @@ import {
 export default function CourierAccount() {
   const router = useRouter();
 
-  // TODO: Replace with real data from API in backend integration step
-  const userEmail = "erica.ger@gmail.com";
+  // Primary email is read-only — comes from the users table
+  const [userEmail, setUserEmail] = useState("");
+
+  // Editable fields — come from the couriers table
   const [courierEmail, setCourierEmail] = useState("");
   const [courierPhone, setCourierPhone] = useState("");
 
-  // Handles sending updated email and phone to the backend
+  // Tracks whether the page is still loading data from the API
+  const [loading, setLoading] = useState(true);
+
+  // useEffect runs once when the screen loads
+  // It fetches the account data from the backend and populates the fields
+  useEffect(() => {
+    fetchAccountData();
+  }, []);
+
+  // Fetches account data from GET /api/account/{id}?type=courier
+  const fetchAccountData = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("user_id");
+
+      const response = await fetch(
+        `${API_URL}/api/account/${userId}?type=courier`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Populate the fields with real data from the database
+      setUserEmail(data.email || "");
+      setCourierEmail(data.courier_email || "");
+      setCourierPhone(data.courier_phone || "");
+    } catch (error) {
+      console.error("Error fetching account data:", error);
+      Alert.alert("Error", "Could not load account data. Please try again.");
+    } finally {
+      // Whether it succeeded or failed, stop showing the loading state
+      setLoading(false);
+    }
+  };
+
+  // Sends updated email and phone to POST /api/account/{id}
   const handleUpdate = async () => {
-    Alert.alert("Success", "Account updated successfully.");
-    // TODO: Connect to POST /api/account/{id} in backend integration step
+    try {
+      const userId = await AsyncStorage.getItem("user_id");
+
+      const response = await fetch(`${API_URL}/api/account/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "courier",
+          email: courierEmail,
+          phone: courierPhone,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      Alert.alert("Success", "Account updated successfully.");
+    } catch (error) {
+      console.error("Error updating account:", error);
+      Alert.alert("Error", "Could not update account. Please try again.");
+    }
   };
 
   // Handles logging out and returning to login screen
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
     router.replace("/");
   };
+
+  // Show a loading message while data is being fetched
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading account...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -96,6 +176,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "#f5f5f5",
     padding: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  loadingText: {
+    fontFamily: "Arial",
+    fontSize: 16,
+    color: "#888888",
   },
   header: {
     flexDirection: "row",
