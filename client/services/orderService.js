@@ -7,12 +7,20 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
  */
 export const orderService = {
   /**
+  /**
    * Create a new order
    * @param {number} restaurantId - Restaurant ID
    * @param {Array} products - Array of {id, quantity}
+   * @param {boolean} sendEmail - Whether to send email confirmation
+   * @param {boolean} sendSMS - Whether to send SMS confirmation
    * @returns {Promise<Object>} Created order data
    */
-  async createOrder(restaurantId, products) {
+  async createOrder(
+    restaurantId,
+    products,
+    sendEmail = false,
+    sendSMS = false,
+  ) {
     try {
       const customerId = await AsyncStorage.getItem("customer_id");
 
@@ -23,9 +31,15 @@ export const orderService = {
           id: p.id,
           quantity: p.quantity,
         })),
+        // Notification preferences selected by the customer in the order modal
+        sendEmail: sendEmail,
+        sendSMS: sendSMS,
       };
 
-      console.log("Creating order with data:", JSON.stringify(orderData, null, 2));
+      console.log(
+        "Creating order with data:",
+        JSON.stringify(orderData, null, 2),
+      );
 
       const response = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
@@ -34,11 +48,11 @@ export const orderService = {
         },
         body: JSON.stringify(orderData),
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return data;
     } catch (error) {
@@ -55,9 +69,11 @@ export const orderService = {
     try {
       const customerId = await AsyncStorage.getItem("customer_id");
       const type = "customer";
-      
-      console.log(`Fetching order history for customer_id=${customerId} with type=${type}`);
-      
+
+      console.log(
+        `Fetching order history for customer_id=${customerId} with type=${type}`,
+      );
+
       const response = await fetch(
         `${API_URL}/api/orders?type=${type}&id=${customerId}`,
         {
@@ -65,13 +81,13 @@ export const orderService = {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return data;
     } catch (error) {
@@ -93,11 +109,11 @@ export const orderService = {
           "Content-Type": "application/json",
         },
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return data;
     } catch (error) {
