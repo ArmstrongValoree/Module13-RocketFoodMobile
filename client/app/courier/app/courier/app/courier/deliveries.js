@@ -1,13 +1,17 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 // Courier Delivery Page — Courier Home Page
 // Displays all PENDING orders with no courier assigned
@@ -21,35 +25,61 @@ import {
 export default function CourierDeliveries() {
   const router = useRouter();
 
-  // TODO: Replace with real data from API in backend integration step
-  const [deliveries, setDeliveries] = useState([
-    {
-      id: 1,
-      address: "111 1st Ave.",
-      status: "PENDING",
-      restaurant: "Sushi California",
-      orderDate: "2023/02/27",
-      products: [
-        { name: "Salmon Roll", quantity: 2, price: 6.5 },
-        { name: "Tuna Roll", quantity: 1, price: 2.25 },
-        { name: "Yasai Tempura", quantity: 1, price: 3.0 },
-      ],
-      total: 12.0,
-    },
-    {
-      id: 2,
-      address: "222 2nd Ave.",
-      status: "PENDING",
-      restaurant: "Amazing Greek",
-      orderDate: "2023/02/28",
-      products: [{ name: "Greek Salad", quantity: 1, price: 8.5 }],
-      total: 8.5,
-    },
-  ]);
+  // Holds the list of deliveries fetched from the backend
+  const [deliveries, setDeliveries] = useState([]);
+
+  // Tracks whether the page is still loading data from the API
+  const [loading, setLoading] = useState(true);
 
   // Controls which delivery is shown in the detail modal
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  // useEffect runs once when the screen loads
+  // It fetches the courier's deliveries from the backend
+  useEffect(() => {
+    fetchDeliveries();
+  }, []);
+
+  // Fetches deliveries from GET /api/couriers/{id}/orders
+  const fetchDeliveries = async () => {
+    try {
+      const courierId = await AsyncStorage.getItem("courier_id");
+
+      const response = await fetch(
+        `${API_URL}/api/couriers/${courierId}/orders`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Map the API response to the shape our UI expects
+      const mapped = data.map((order) => ({
+        id: order.id,
+        address: order.address || "No address provided",
+        status: order.status || "PENDING",
+        restaurant: order.restaurant_name || "Unknown Restaurant",
+        orderDate: order.created_at || "",
+        products: order.products || [],
+        total: order.total_price || 0,
+      }));
+
+      setDeliveries(mapped);
+    } catch (error) {
+      console.error("Error fetching deliveries:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Returns the background color for each status button
   const getStatusColor = (status) => {
@@ -59,24 +89,51 @@ export default function CourierDeliveries() {
     return "#c0392b";
   };
 
-  // Advances the status to the next stage
+  // Determines the next status in the progression
+  const getNextStatus = (currentStatus) => {
+    if (currentStatus === "PENDING") return "IN PROGRESS";
+    if (currentStatus === "IN PROGRESS") return "DELIVERED";
+    return currentStatus;
+  };
+
+  // Advances the status to the next stage and updates the database
   // PENDING → IN PROGRESS → DELIVERED (locked after DELIVERED)
-  const handleStatusPress = (deliveryId) => {
-    setDeliveries((prev) =>
-      prev.map((delivery) => {
-        if (delivery.id !== deliveryId) return delivery;
-        if (delivery.status === "PENDING") {
-          // TODO: Call PATCH /api/orders/{id} with status IN_PROGRESS in backend step
-          return { ...delivery, status: "IN PROGRESS" };
-        }
-        if (delivery.status === "IN PROGRESS") {
-          // TODO: Call PATCH /api/orders/{id} with status DELIVERED in backend step
-          return { ...delivery, status: "DELIVERED" };
-        }
-        // DELIVERED — no further changes allowed
-        return delivery;
-      }),
-    );
+  const handleStatusPress = async (deliveryId, currentStatus) => {
+    // Do nothing if already delivered
+    if (currentStatus === "DELIVERED") return;
+
+    const nextStatus = getNextStatus(currentStatus);
+    const courierId = await AsyncStorage.getItem("courier_id");
+
+    try {
+      const response = await fetch(`${API_URL}/api/orders/${deliveryId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: nextStatus,
+          // Assigns the courier to the order when moving from PENDING to IN PROGRESS
+          courier_id:
+            nextStatus === "IN PROGRESS" ? parseInt(courierId) : undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Update the local state so the UI reflects the change immediately
+      setDeliveries((prev) =>
+        prev.map((delivery) =>
+          delivery.id === deliveryId
+            ? { ...delivery, status: nextStatus }
+            : delivery,
+        ),
+      );
+    } catch (error) {
+      console.error("Error updating delivery status:", error);
+    }
   };
 
   // Opens the delivery detail modal for the selected order
@@ -86,9 +143,20 @@ export default function CourierDeliveries() {
   };
 
   // Handles logging out and returning to login screen
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
     router.replace("/");
   };
+
+  // Show a loading spinner while data is being fetched
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#DA583B" />
+        <Text style={styles.loadingText}>Loading deliveries...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -112,6 +180,13 @@ export default function CourierDeliveries() {
           <Text style={[styles.tableHeaderText, styles.colView]}>VIEW</Text>
         </View>
 
+        {/* Empty State — shown when no deliveries are available */}
+        {deliveries.length === 0 && (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No deliveries available.</Text>
+          </View>
+        )}
+
         {/* Table Data Rows */}
         {deliveries.map((delivery) => (
           <View key={delivery.id} style={styles.tableRow}>
@@ -129,7 +204,7 @@ export default function CourierDeliveries() {
                 styles.statusButton,
                 { backgroundColor: getStatusColor(delivery.status) },
               ]}
-              onPress={() => handleStatusPress(delivery.id)}
+              onPress={() => handleStatusPress(delivery.id, delivery.status)}
               disabled={delivery.status === "DELIVERED"}
             >
               <Text style={styles.statusButtonText}>{delivery.status}</Text>
@@ -189,14 +264,14 @@ export default function CourierDeliveries() {
                   <Text style={styles.productName}>{product.name}</Text>
                   <Text style={styles.productQty}>x{product.quantity}</Text>
                   <Text style={styles.productPrice}>
-                    $ {product.price.toFixed(2)}
+                    $ {Number(product.price).toFixed(2)}
                   </Text>
                 </View>
               ))}
 
               {/* Total */}
               <Text style={styles.modalTotal}>
-                TOTAL: $ {selectedDelivery?.total.toFixed(2)}
+                TOTAL: $ {Number(selectedDelivery?.total).toFixed(2)}
               </Text>
             </View>
           </View>
@@ -210,6 +285,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  loadingText: {
+    fontFamily: "Arial",
+    fontSize: 16,
+    color: "#888888",
+    marginTop: 12,
+  },
+  emptyContainer: {
+    padding: 32,
+    alignItems: "center",
+  },
+  emptyText: {
+    fontFamily: "Arial",
+    fontSize: 14,
+    color: "#888888",
   },
   header: {
     flexDirection: "row",
