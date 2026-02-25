@@ -135,6 +135,7 @@ export default function CustomerAccount() {
         style={[styles.input, styles.readOnly]}
         value={userEmail}
         editable={false}
+        key={`primary-${userEmail}`}
       />
       <Text style={styles.fieldHint}>
         Email used to login to the application.
@@ -149,6 +150,7 @@ export default function CustomerAccount() {
         placeholder="Customer email"
         keyboardType="email-address"
         autoCapitalize="none"
+        key={`customer-email-${customerEmail}`}
       />
       <Text style={styles.fieldHint}>
         Email used for your Customer account.
@@ -159,7 +161,7 @@ export default function CustomerAccount() {
       <TextInput
         style={styles.input}
         value={customerPhone}
-        onChangeText={setCustomerPhone}
+        key={`customer-phone-${customerPhone}`}
         placeholder="Customer phone"
         keyboardType="phone-pad"
       />

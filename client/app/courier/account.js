@@ -135,6 +135,7 @@ export default function CourierAccount() {
         style={[styles.input, styles.readOnly]}
         value={userEmail}
         editable={false}
+        key={`primary-${userEmail}`}
       />
       <Text style={styles.fieldHint}>
         Email used to login to the application.
@@ -149,6 +150,7 @@ export default function CourierAccount() {
         placeholder="Courier email"
         keyboardType="email-address"
         autoCapitalize="none"
+        key={`courier-email-${courierEmail}`}
       />
       <Text style={styles.fieldHint}>Email used for your Courier account.</Text>
 
@@ -157,7 +159,7 @@ export default function CourierAccount() {
       <TextInput
         style={styles.input}
         value={courierPhone}
-        onChangeText={setCourierPhone}
+        key={`courier-phone-${courierPhone}`}
         placeholder="Courier phone"
         keyboardType="phone-pad"
       />
