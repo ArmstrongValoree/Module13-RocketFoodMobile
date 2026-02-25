@@ -52,6 +52,7 @@ export default function CourierDeliveries() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
           },
         },
       );
@@ -110,6 +111,7 @@ export default function CourierDeliveries() {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({
           status: nextStatus,

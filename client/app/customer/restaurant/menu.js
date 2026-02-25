@@ -73,8 +73,15 @@ export default function RestaurantMenuScreen() {
     }, 0);
   };
 
-  const handleCreateOrder = async () => {
+  // Opens the modal to show notification checkboxes before placing the order
+  const handleCreateOrder = () => {
+    setOrderStatus(null);
     setModalVisible(true);
+  };
+
+  // Called when the user taps CONFIRM ORDER inside the modal
+  // Sends the order to the backend with notification preferences
+  const handleConfirmOrder = async () => {
     setOrderStatus("loading");
 
     try {
@@ -235,6 +242,7 @@ export default function RestaurantMenuScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             {/* Notification Options */}
+            {/* Notification Options — shown before order is submitted */}
             {!orderStatus && (
               <View style={styles.notificationSection}>
                 <Text style={styles.notificationTitle}>
@@ -269,6 +277,14 @@ export default function RestaurantMenuScreen() {
                     {sendSMS && <Text style={styles.checkmark}>✓</Text>}
                   </View>
                   <Text style={styles.checkboxLabel}>By Phone</Text>
+                </TouchableOpacity>
+
+                {/* CONFIRM ORDER button — disabled while API call is in progress */}
+                <TouchableOpacity
+                  style={styles.confirmButton}
+                  onPress={handleConfirmOrder}
+                >
+                  <Text style={styles.confirmButtonText}>CONFIRM ORDER</Text>
                 </TouchableOpacity>
               </View>
             )}

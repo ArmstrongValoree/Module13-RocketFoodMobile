@@ -48,6 +48,7 @@ export default function CustomerAccount() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
           },
         },
       );
@@ -80,6 +81,7 @@ export default function CustomerAccount() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({
           type: "customer",

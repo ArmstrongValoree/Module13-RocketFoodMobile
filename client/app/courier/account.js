@@ -48,6 +48,7 @@ export default function CourierAccount() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
           },
         },
       );
@@ -80,6 +81,7 @@ export default function CourierAccount() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({
           type: "courier",

@@ -486,13 +486,37 @@ Update delivery status (PENDING→IN PROGRESS→DELIVERED)
 
 ## ✏️ Prompt - 03
 
-**📎 Context:** Write what you were working on here
+**📎 Context:** NGROK Crashing
 
-Paste your prompt or question here
+The mobile app is still crashing with the fatal error. 
 
 ## 🤖 Response - 03
 
-Paste the AI's answer here
+Mobile App — Fatal Error Synopsis
+
+The Error
+Uncaught Error: java.io.IOException: Failed to download remote update
+14:57:55 Fatal Error
+This error appears in Expo Go on Android every time the QR code is scanned. The web version of the app at http://localhost:8081 works correctly.
+
+Root Cause Theory
+Expo Go on Android is attempting to download a remote bundle from an EAS (Expo Application Services) update URL instead of loading the local Metro bundler bundle. Something in the project configuration or Expo Go version is triggering this remote fetch, which then fails.
+
+What Was Ruled Out
+AttemptResultPhone was on 5G cellular dataSwitched to WiFi — error persistedWrong folder (server/ instead of client/)Fixed — error persistedFiles in wrong location (app/app/selection.js)Fixed — error persistedMissing Ionicons import in selection.jsFixed — web works now, mobile still failsnewArchEnabled: true in app.jsonChanged to false — error persistedCleared node_modules and reinstalledrm -rf node_modules && npm install — error persistedCleared Expo cacherm -rf ~/.expo — error persistedCleared Metro cachenpx expo start --clear multiple times — error persistedRan with --no-dev flagnpx expo start --clear --no-dev — error persistedCleared Metro temp filesrm -rf /tmp/metro-* /tmp/haste-* — error persistedNo EAS Update config in app.jsonConfirmed — not the causeNo ngrok whitelist in application.propertiesConfirmed — not the causePhone and computer on same WiFiConfirmed — 172.17.116.162 matches on both
+
+Current State
+
+Web version: ✅ Fully working — login, selection page, restaurant list, courier deliveries all render
+
+Mobile version: ❌ Fatal error before the app loads — never reaches the login screen
+
+
+Next Steps to Investigate
+
+Check Expo SDK version in package.json against the Expo Go app version installed on the phone — a mismatch here is the most likely remaining cause
+Clear Expo Go app cache and data on the Android device
+If SDK mismatch confirmed — either update Expo Go from the Play Store or downgrade the project SDK to match
 
 ---
 

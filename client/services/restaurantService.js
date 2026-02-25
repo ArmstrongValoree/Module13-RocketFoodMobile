@@ -11,35 +11,36 @@ export const restaurantService = {
    * @returns {Promise<Array>} List of restaurants
    */
   async getAllRestaurants(rating = null, priceRange = null) {
-  try {
-    let url = `${API_URL}/api/restaurants`;
-    const params = [];
+    try {
+      let url = `${API_URL}/api/restaurants`;
+      const params = [];
 
-    if (rating) params.push(`rating=${rating}`);
-    if (priceRange) params.push(`price_range=${priceRange}`);
+      if (rating) params.push(`rating=${rating}`);
+      if (priceRange) params.push(`price_range=${priceRange}`);
 
-    if (params.length > 0) {
-      url += `?${params.join("&")}`;
+      if (params.length > 0) {
+        url += `?${params.join("&")}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const responseData = await response.json(); // Renamed from 'data'
+      return responseData.data; // Now it's clear: get 'data' from responseData
+    } catch (error) {
+      console.error("Error fetching restaurants:", error);
+      throw error;
     }
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const responseData = await response.json(); // Renamed from 'data'
-    return responseData.data; // Now it's clear: get 'data' from responseData
-  } catch (error) {
-    console.error("Error fetching restaurants:", error);
-    throw error;
-  }
-},
+  },
 
   /**
    * Get a single restaurant by ID
@@ -52,6 +53,7 @@ export const restaurantService = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
       });
 

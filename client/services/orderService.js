@@ -45,6 +45,7 @@ export const orderService = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify(orderData),
       });
@@ -80,6 +81,7 @@ export const orderService = {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
           },
         },
       );
@@ -107,6 +109,7 @@ export const orderService = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
       });
 
