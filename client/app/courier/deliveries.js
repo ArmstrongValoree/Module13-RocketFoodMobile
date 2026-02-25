@@ -1,3 +1,7 @@
+// Connects to: GET /api/orders?type=courier&id={id}
+// Connects to: PUT /api/order/{id}/courier — assigns courier to order
+// Connects to: PUT /api/order/{id}/status — updates delivery status
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -41,21 +45,27 @@ export default function CourierDeliveries() {
     fetchDeliveries();
   }, []);
 
-  // Fetches deliveries from GET /api/couriers/{id}/orders
+  // Fetches deliveries from GET /api/orders?type=courier&id={courierId}
   const fetchDeliveries = async () => {
     try {
       const courierId = await AsyncStorage.getItem("courier_id");
 
       const response = await fetch(
-        `${API_URL}/api/couriers/${courierId}/orders`,
+        `${API_URL}/api/orders?type=courier&id=${courierId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
+            "ngrok-skip-browser-warning": "true",
           },
         },
       );
+
+      // 204 No Content means the courier has no orders — not an error
+      if (response.status === 204) {
+        setDeliveries([]);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -66,12 +76,16 @@ export default function CourierDeliveries() {
       // Map the API response to the shape our UI expects
       const mapped = data.map((order) => ({
         id: order.id,
-        address: order.address || "No address provided",
-        status: order.status || "PENDING",
+        address: order.customer_address || "No address provided",
+        status: order.status || "pending",
         restaurant: order.restaurant_name || "Unknown Restaurant",
-        orderDate: order.created_at || "",
-        products: order.products || [],
-        total: order.total_price || 0,
+        orderDate: order.timestamp || "",
+        products: (order.products || []).map((p) => ({
+          name: p.product_name,
+          quantity: p.quantity,
+          price: p.unit_cost,
+        })),
+        total: order.total_cost || 0,
       }));
 
       setDeliveries(mapped);
@@ -84,16 +98,16 @@ export default function CourierDeliveries() {
 
   // Returns the background color for each status button
   const getStatusColor = (status) => {
-    if (status === "PENDING") return "#c0392b";
-    if (status === "IN PROGRESS") return "#e67e22";
-    if (status === "DELIVERED") return "#27ae60";
+    if (status === "pending") return "#c0392b";
+    if (status === "in progress") return "#e67e22";
+    if (status === "delivered") return "#27ae60";
     return "#c0392b";
   };
 
   // Determines the next status in the progression
   const getNextStatus = (currentStatus) => {
-    if (currentStatus === "PENDING") return "IN PROGRESS";
-    if (currentStatus === "IN PROGRESS") return "DELIVERED";
+    if (currentStatus === "pending") return "in progress";
+    if (currentStatus === "in progress") return "delivered";
     return currentStatus;
   };
 
@@ -101,25 +115,44 @@ export default function CourierDeliveries() {
   // PENDING → IN PROGRESS → DELIVERED (locked after DELIVERED)
   const handleStatusPress = async (deliveryId, currentStatus) => {
     // Do nothing if already delivered
-    if (currentStatus === "DELIVERED") return;
+    if (currentStatus === "delivered") return;
 
     const nextStatus = getNextStatus(currentStatus);
     const courierId = await AsyncStorage.getItem("courier_id");
 
     try {
-      const response = await fetch(`${API_URL}/api/orders/${deliveryId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
+      // Step 1 — If moving to IN PROGRESS, assign this courier to the order first
+      if (nextStatus === "IN PROGRESS") {
+        const courierResponse = await fetch(
+          `${API_URL}/api/order/${deliveryId}/courier`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true",
+            },
+            body: JSON.stringify({ courier_id: parseInt(courierId) }),
+          },
+        );
+
+        if (!courierResponse.ok) {
+          throw new Error(`HTTP error! status: ${courierResponse.status}`);
+        }
+      }
+
+      // Step 2 — Update the order status
+      // Backend expects lowercase: "pending", "in progress", "delivered"
+      const response = await fetch(
+        `${API_URL}/api/order/${deliveryId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+          body: JSON.stringify({ status: nextStatus.toLowerCase() }),
         },
-        body: JSON.stringify({
-          status: nextStatus,
-          // Assigns the courier to the order when moving from PENDING to IN PROGRESS
-          courier_id:
-            nextStatus === "IN PROGRESS" ? parseInt(courierId) : undefined,
-        }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -207,7 +240,7 @@ export default function CourierDeliveries() {
                 { backgroundColor: getStatusColor(delivery.status) },
               ]}
               onPress={() => handleStatusPress(delivery.id, delivery.status)}
-              disabled={delivery.status === "DELIVERED"}
+              disabled={delivery.status === "delivered"}
             >
               <Text style={styles.statusButtonText}>{delivery.status}</Text>
             </TouchableOpacity>
