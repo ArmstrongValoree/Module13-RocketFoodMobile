@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -33,10 +33,11 @@ export default function CourierAccount() {
 
   // useEffect runs once when the screen loads
   // It fetches the account data from the backend and populates the fields
-  useEffect(() => {
-    fetchAccountData();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchAccountData();
+    }, []),
+  );
   // Fetches account data from GET /api/account/{id}?type=courier
   const fetchAccountData = async () => {
     try {
@@ -60,9 +61,16 @@ export default function CourierAccount() {
       const data = await response.json();
 
       // Populate the fields with real data from the database
+      console.log("Account data received:", data);
       setUserEmail(data.primaryEmail || "");
       setCourierEmail(data.courierEmail || "");
       setCourierPhone(data.courierPhone || "");
+      console.log(
+        "State set to:",
+        data.primaryEmail,
+        data.courierEmail,
+        data.courierPhone,
+      );
     } catch (error) {
       console.error("Error fetching account data:", error);
       Alert.alert("Error", "Could not load account data. Please try again.");

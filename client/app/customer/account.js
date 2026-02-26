@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -33,15 +33,17 @@ export default function CustomerAccount() {
 
   // useEffect runs once when the screen loads
   // It fetches the account data from the backend and populates the fields
-  useEffect(() => {
-    fetchAccountData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAccountData();
+    }, []),
+  );
 
   // Fetches account data from GET /api/account/{id}?type=customer
   const fetchAccountData = async () => {
     try {
       const userId = await AsyncStorage.getItem("user_id");
-
+      const accessToken = await AsyncStorage.getItem("accessToken");
       const response = await fetch(
         `${API_URL}/api/account/${userId}?type=customer`,
         {
@@ -49,6 +51,7 @@ export default function CustomerAccount() {
           headers: {
             "Content-Type": "application/json",
             "ngrok-skip-browser-warning": "true",
+            Authorization: `Bearer ${accessToken}`,
           },
         },
       );
@@ -60,9 +63,16 @@ export default function CustomerAccount() {
       const data = await response.json();
 
       // Populate the fields with real data from the database
+      console.log("Account data received:", data);
       setUserEmail(data.primaryEmail || "");
       setCustomerEmail(data.customerEmail || "");
       setCustomerPhone(data.customerPhone || "");
+      console.log(
+        "State set to:",
+        data.primaryEmail,
+        data.customerEmail,
+        data.customerPhone,
+      );
     } catch (error) {
       console.error("Error fetching account data:", error);
       Alert.alert("Error", "Could not load account data. Please try again.");
@@ -76,19 +86,18 @@ export default function CustomerAccount() {
   const handleUpdate = async () => {
     try {
       const userId = await AsyncStorage.getItem("user_id");
-
-      const response = await fetch(`${API_URL}/api/account/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await fetch(
+        `${API_URL}/api/account/${userId}?type=customer`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-        body: JSON.stringify({
-          type: "customer",
-          email: customerEmail,
-          phone: customerPhone,
-        }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
