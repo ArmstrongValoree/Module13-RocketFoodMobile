@@ -158,7 +158,6 @@ export default function CourierAccount() {
         placeholder="Courier email"
         keyboardType="email-address"
         autoCapitalize="none"
-        key={`courier-email-${courierEmail}`}
       />
       <Text style={styles.fieldHint}>Email used for your Courier account.</Text>
 
@@ -166,8 +165,7 @@ export default function CourierAccount() {
       <Text style={styles.fieldLabel}>Courier Phone:</Text>
       <TextInput
         style={styles.input}
-        value={courierPhone}
-        key={`courier-phone-${courierPhone}`}
+        value={customerPhone}
         placeholder="Courier phone"
         keyboardType="phone-pad"
       />
