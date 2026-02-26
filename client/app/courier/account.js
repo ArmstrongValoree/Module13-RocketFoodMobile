@@ -65,12 +65,6 @@ export default function CourierAccount() {
       setUserEmail(data.primaryEmail || "");
       setCourierEmail(data.courierEmail || "");
       setCourierPhone(data.courierPhone || "");
-      console.log(
-        "State set to:",
-        data.primaryEmail,
-        data.courierEmail,
-        data.courierPhone,
-      );
     } catch (error) {
       console.error("Error fetching account data:", error);
       Alert.alert("Error", "Could not load account data. Please try again.");
@@ -165,7 +159,8 @@ export default function CourierAccount() {
       <Text style={styles.fieldLabel}>Courier Phone:</Text>
       <TextInput
         style={styles.input}
-        value={customerPhone}
+        value={courierPhone}
+        onChangeText={setCourierPhone}
         placeholder="Courier phone"
         keyboardType="phone-pad"
       />

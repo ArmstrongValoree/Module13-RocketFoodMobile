@@ -161,6 +161,7 @@ export default function CustomerAccount() {
       <TextInput
         style={styles.input}
         value={customerPhone}
+        onChangeText={setCustomerPhone}
         placeholder="Customer phone"
         keyboardType="phone-pad"
       />
