@@ -12,7 +12,7 @@ import lombok.Setter;
 public class AuthResponseSuccessDTO {
     private String accessToken;
     private boolean success;
-    private int user_id;
-    private int customer_id;
-    private int courier_id;
+    private Integer user_id;
+    private Integer customer_id;
+    private Integer courier_id;
 }
