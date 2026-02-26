@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -30,14 +30,13 @@ export default function CourierAccount() {
 
   // Tracks whether the page is still loading data from the API
   const [loading, setLoading] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // useEffect runs once when the screen loads
   // It fetches the account data from the backend and populates the fields
-  useFocusEffect(
-    useCallback(() => {
-      fetchAccountData();
-    }, []),
-  );
+  useEffect(() => {
+    fetchAccountData();
+  }, []);
   // Fetches account data from GET /api/account/{id}?type=courier
   const fetchAccountData = async () => {
     try {
@@ -61,7 +60,6 @@ export default function CourierAccount() {
       const data = await response.json();
 
       // Populate the fields with real data from the database
-      console.log("Account data received:", data);
       setUserEmail(data.primaryEmail || "");
       setCourierEmail(data.courierEmail || "");
       setCourierPhone(data.courierPhone || "");
@@ -71,6 +69,7 @@ export default function CourierAccount() {
     } finally {
       // Whether it succeeded or failed, stop showing the loading state
       setLoading(false);
+      setDataLoaded(true);
     }
   };
 

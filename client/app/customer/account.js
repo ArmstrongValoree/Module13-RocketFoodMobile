@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -30,31 +30,31 @@ export default function CustomerAccount() {
 
   // Tracks whether the page is still loading data from the API
   const [loading, setLoading] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // useEffect runs once when the screen loads
   // It fetches the account data from the backend and populates the fields
-  useFocusEffect(
-    useCallback(() => {
-      fetchAccountData();
-    }, []),
-  );
+  useEffect(() => {
+    fetchAccountData();
+  }, []);
 
   // Fetches account data from GET /api/account/{id}?type=customer
   const fetchAccountData = async () => {
     try {
       const userId = await AsyncStorage.getItem("user_id");
       const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await fetch(
-        `${API_URL}/api/account/${userId}?type=customer`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-            Authorization: `Bearer ${accessToken}`,
-          },
+      const response = await fetch(`${API_URL}/api/account/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
-      );
+        body: JSON.stringify({
+          type: "customer",
+          email: customerEmail,
+          phone: customerPhone,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -71,6 +71,7 @@ export default function CustomerAccount() {
     } finally {
       // Whether it succeeded or failed, stop showing the loading state
       setLoading(false);
+      setDataLoaded(true);
     }
   };
 
