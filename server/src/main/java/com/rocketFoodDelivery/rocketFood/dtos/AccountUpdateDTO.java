@@ -2,42 +2,33 @@ package com.rocketFoodDelivery.rocketFood.dtos;
 
 public class AccountUpdateDTO {
 
-    private String customerEmail;
-    private String customerPhone;
-    private String courierEmail;
-    private String courierPhone;
+    private String type;      // "customer" or "courier"
+    private String email;
+    private String phone;
 
     // Getters and Setters
 
-    public String getCustomerEmail() {
-        return customerEmail;
+    public String getType() {
+        return type;
     }
 
-    public void setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getCustomerPhone() {
-        return customerPhone;
+    public String getEmail() {
+        return email;
     }
 
-    public void setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getCourierEmail() {
-        return courierEmail;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setCourierEmail(String courierEmail) {
-        this.courierEmail = courierEmail;
-    }
-
-    public String getCourierPhone() {
-        return courierPhone;
-    }
-
-    public void setCourierPhone(String courierPhone) {
-        this.courierPhone = courierPhone;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

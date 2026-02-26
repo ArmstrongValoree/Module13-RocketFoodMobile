@@ -1,7 +1,22 @@
 package com.rocketFoodDelivery.rocketFood.controller.api;
 
-import com.rocketFoodDelivery.rocketFood.dtos.AccountUpdateDTO;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.rocketFoodDelivery.rocketFood.dtos.AccountResponseDTO;
+import com.rocketFoodDelivery.rocketFood.dtos.AccountUpdateDTO;
 import com.rocketFoodDelivery.rocketFood.dtos.AuthRequestDTO;
 import com.rocketFoodDelivery.rocketFood.dtos.AuthResponseErrorDTO;
 import com.rocketFoodDelivery.rocketFood.dtos.AuthResponseSuccessDTO;
@@ -13,21 +28,6 @@ import com.rocketFoodDelivery.rocketFood.repository.CustomerRepository;
 import com.rocketFoodDelivery.rocketFood.repository.UserRepository;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
 
 @RestController
 public class AuthController {
@@ -98,7 +98,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/api/account/{id}")
+    @PostMapping("/api/account/{id}")
     public ResponseEntity<?> updateAccount(
         @PathVariable int id,
         @RequestBody AccountUpdateDTO accountUpdateDTO
@@ -109,26 +109,39 @@ public class AuthController {
             return ResponseEntity.status(422).body("Invalid ID");
         }
 
-        // Mise à jour des informations du client
-        if (accountUpdateDTO.getCustomerEmail() != null || accountUpdateDTO.getCustomerPhone() != null) {
+        // Determine if updating customer or courier based on 'type' field
+        String type = accountUpdateDTO.getType();
+
+        if ("customer".equals(type)) {
             Optional<Customer> customerOptional = customerRepository.findByUserEntityId(id);
             if (customerOptional.isPresent()) {
                 Customer customer = customerOptional.get();
-                customer.setEmail(accountUpdateDTO.getCustomerEmail());
-                customer.setPhone(accountUpdateDTO.getCustomerPhone());
+                if (accountUpdateDTO.getEmail() != null) {
+                    customer.setEmail(accountUpdateDTO.getEmail());
+                }
+                if (accountUpdateDTO.getPhone() != null) {
+                    customer.setPhone(accountUpdateDTO.getPhone());
+                }
                 customerRepository.save(customer);
+            } else {
+                return ResponseEntity.status(404).body("Customer not found");
             }
-        }
-
-        // Mise à jour des informations du coursier
-        if (accountUpdateDTO.getCourierEmail() != null || accountUpdateDTO.getCourierPhone() != null) {
+        } else if ("courier".equals(type)) {
             Optional<Courier> courierOptional = courierRepository.findByUserEntityId(id);
             if (courierOptional.isPresent()) {
                 Courier courier = courierOptional.get();
-                courier.setEmail(accountUpdateDTO.getCourierEmail());
-                courier.setPhone(accountUpdateDTO.getCourierPhone());
+                if (accountUpdateDTO.getEmail() != null) {
+                    courier.setEmail(accountUpdateDTO.getEmail());
+                }
+                if (accountUpdateDTO.getPhone() != null) {
+                    courier.setPhone(accountUpdateDTO.getPhone());
+                }
                 courierRepository.save(courier);
+            } else {
+                return ResponseEntity.status(404).body("Courier not found");
             }
+        } else {
+            return ResponseEntity.status(400).body("Invalid type. Must be 'customer' or 'courier'");
         }
 
         return ResponseEntity.ok("Account updated successfully");
