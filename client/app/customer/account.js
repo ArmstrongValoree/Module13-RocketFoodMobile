@@ -42,29 +42,28 @@ export default function CustomerAccount() {
   const fetchAccountData = async () => {
     try {
       const userId = await AsyncStorage.getItem("user_id");
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await fetch(`${API_URL}/api/account/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
+
+      const response = await fetch(
+        `${API_URL}/api/account/${userId}?type=customer`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
         },
-        body: JSON.stringify({
-          type: "customer",
-          email: customerEmail,
-          phone: customerPhone,
-        }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
+
       // Populate the fields with real data from the database
-      setUserEmail(data.primaryEmail || "");
-      setCustomerEmail(data.customerEmail || "");
-      setCustomerPhone(data.customerPhone || "");
+      setUserEmail(data.email || "");
+      setCustomerEmail(data.customer_email || "");
+      setCustomerPhone(data.customer_phone || "");
     } catch (error) {
       console.error("Error fetching account data:", error);
       Alert.alert("Error", "Could not load account data. Please try again.");
@@ -79,18 +78,18 @@ export default function CustomerAccount() {
   const handleUpdate = async () => {
     try {
       const userId = await AsyncStorage.getItem("user_id");
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await fetch(
-        `${API_URL}/api/account/${userId}?type=customer`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-            Authorization: `Bearer ${accessToken}`,
-          },
+      const response = await fetch(`${API_URL}/api/account/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
-      );
+        body: JSON.stringify({
+          type: "customer",
+          email: customerEmail,
+          phone: customerPhone,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -148,10 +147,11 @@ export default function CustomerAccount() {
       <TextInput
         style={styles.input}
         value={customerEmail}
-        onChangeText={setCustomerEmail}
+        onChangeText={(text) => setCustomerEmail(text)}
         placeholder="Customer email"
         keyboardType="email-address"
         autoCapitalize="none"
+        editable={true}
       />
       <Text style={styles.fieldHint}>
         Email used for your Customer account.
@@ -162,9 +162,10 @@ export default function CustomerAccount() {
       <TextInput
         style={styles.input}
         value={customerPhone}
-        onChangeText={setCustomerPhone}
+        onChangeText={(text) => setCustomerPhone(text)}
         placeholder="Customer phone"
         keyboardType="phone-pad"
+        editable={true}
       />
       <Text style={styles.fieldHint}>
         Phone number for your Customer account.

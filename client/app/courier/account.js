@@ -60,16 +60,15 @@ export default function CourierAccount() {
       const data = await response.json();
 
       // Populate the fields with real data from the database
-      setUserEmail(data.primaryEmail || "");
-      setCourierEmail(data.courierEmail || "");
-      setCourierPhone(data.courierPhone || "");
+      setUserEmail(data.email || "");
+      setCourierEmail(data.courier_email || "");
+      setCourierPhone(data.courier_phone || "");
     } catch (error) {
       console.error("Error fetching account data:", error);
       Alert.alert("Error", "Could not load account data. Please try again.");
     } finally {
       // Whether it succeeded or failed, stop showing the loading state
       setLoading(false);
-      setDataLoaded(true);
     }
   };
 
@@ -147,10 +146,11 @@ export default function CourierAccount() {
       <TextInput
         style={styles.input}
         value={courierEmail}
-        onChangeText={setCourierEmail}
+        onChangeText={(text) => setCourierEmail(text)}
         placeholder="Courier email"
         keyboardType="email-address"
         autoCapitalize="none"
+        editable={true}
       />
       <Text style={styles.fieldHint}>Email used for your Courier account.</Text>
 
@@ -159,9 +159,10 @@ export default function CourierAccount() {
       <TextInput
         style={styles.input}
         value={courierPhone}
-        onChangeText={setCourierPhone}
+        onChangeText={(text) => setCourierPhone(text)}
         placeholder="Courier phone"
         keyboardType="phone-pad"
+        editable={true}
       />
       <Text style={styles.fieldHint}>
         Phone number for your Courier account.
