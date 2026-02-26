@@ -6,13 +6,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -49,6 +49,7 @@ export default function CourierDeliveries() {
   const fetchDeliveries = async () => {
     try {
       const courierId = await AsyncStorage.getItem("courier_id");
+      console.log("DEBUG: courierId=", courierId);
 
       const response = await fetch(
         `${API_URL}/api/orders?type=courier&id=${courierId}`,

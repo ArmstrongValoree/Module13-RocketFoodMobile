@@ -19,6 +19,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findByRestaurantId(int id);
     List<Order> findByCourierId(int id);
     List<Order> findByOrderStatusId(int id);
+    
+    // Find all PENDING orders (unassigned couriers)
+    @Query(nativeQuery = true, value = "SELECT * FROM orders WHERE courier_id IS NULL")
+    List<Order> findPendingOrders();
 
     // Fait
     @Query(nativeQuery = true, value = "SELECT * FROM orders WHERE restaurant_id = :restaurantId")

@@ -113,9 +113,23 @@ public class OrderService {
     }
 
     // Retrieves orders by courier ID
+    // Returns: 1) All PENDING orders (unassigned), 2) All orders assigned to this courier
     public List<ApiOrderDTO> getOrdersByCourierId(int courierId) {
-        List<Order> orders = orderRepository.findByCourierId(courierId);
-        return orders.stream()
+        // Get all PENDING orders (no courier assigned yet)
+        List<Order> pendingOrders = orderRepository.findPendingOrders();
+        
+        // Get all orders assigned to this courier
+        List<Order> assignedOrders = orderRepository.findByCourierId(courierId);
+        
+        // Combine both lists (removing duplicates if any)
+        List<Order> allOrders = new java.util.ArrayList<>(pendingOrders);
+        for (Order order : assignedOrders) {
+            if (!allOrders.contains(order)) {
+                allOrders.add(order);
+            }
+        }
+        
+        return allOrders.stream()
                 .map(this::convertToApiOrderDTO)
                 .collect(Collectors.toList());
     }

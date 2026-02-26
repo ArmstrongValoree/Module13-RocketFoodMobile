@@ -2,14 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    FlatList,
+    Image,
+    Modal,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { orderService } from "../../../services/orderService";
 import { productService } from "../../../services/productService";
@@ -241,6 +241,39 @@ export default function RestaurantMenuScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
+            {/* Order Summary Section */}
+            {!orderStatus && (
+              <View style={styles.orderSummarySection}>
+                <Text style={styles.summaryTitle}>Order Summary</Text>
+                {getOrderSummary().map((item) => (
+                  <View key={item.name}>
+                    <View style={styles.summaryRow}>
+                      <Text style={styles.summaryItem}>{item.name}</Text>
+                      <Text style={styles.summaryQuantity}>
+                        {item.quantity}x
+                      </Text>
+                      <Text style={styles.summaryPrice}>
+                        ${item.cost.toFixed(2)}
+                      </Text>
+                    </View>
+                    <View style={styles.summaryRow}>
+                      <Text style={styles.summaryItem}></Text>
+                      <Text style={styles.summaryQuantity}></Text>
+                      <Text style={styles.summaryPrice}>
+                        ${item.total.toFixed(2)}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>Order Total:</Text>
+                  <Text style={styles.totalAmount}>
+                    ${getTotalCost().toFixed(2)}
+                  </Text>
+                </View>
+              </View>
+            )}
+
             {/* Notification Options */}
             {/* Notification Options — shown before order is submitted */}
             {!orderStatus && (
