@@ -61,9 +61,9 @@ export default function CustomerAccount() {
       const data = await response.json();
 
       // Populate the fields with real data from the database
-      setUserEmail(data.email || "");
-      setCustomerEmail(data.customer_email || "");
-      setCustomerPhone(data.customer_phone || "");
+      setUserEmail(data.primaryEmail || "");
+      setCustomerEmail(data.customerEmail || "");
+      setCustomerPhone(data.customerPhone || "");
     } catch (error) {
       console.error("Error fetching account data:", error);
       Alert.alert("Error", "Could not load account data. Please try again.");

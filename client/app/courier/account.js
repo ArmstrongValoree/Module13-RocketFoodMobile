@@ -60,9 +60,9 @@ export default function CourierAccount() {
       const data = await response.json();
 
       // Populate the fields with real data from the database
-      setUserEmail(data.email || "");
-      setCourierEmail(data.courier_email || "");
-      setCourierPhone(data.courier_phone || "");
+      setUserEmail(data.primaryEmail || "");
+      setCourierEmail(data.courierEmail || "");
+      setCourierPhone(data.courierPhone || "");
     } catch (error) {
       console.error("Error fetching account data:", error);
       Alert.alert("Error", "Could not load account data. Please try again.");

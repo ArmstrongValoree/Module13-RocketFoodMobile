@@ -2,14 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { orderService } from "../../../services/orderService";
 import { productService } from "../../../services/productService";
@@ -278,6 +278,7 @@ export default function RestaurantMenuScreen() {
                     $ {getTotalCost().toFixed(2)}
                   </Text>
                 </View>
+              </View>
             )}
 
             {/* Notification Options */}
@@ -295,7 +296,12 @@ export default function RestaurantMenuScreen() {
                     style={styles.checkboxRow}
                     onPress={() => setSendEmail(!sendEmail)}
                   >
-                    <View style={[styles.checkbox, sendEmail && styles.checkboxChecked]}>
+                    <View
+                      style={[
+                        styles.checkbox,
+                        sendEmail && styles.checkboxChecked,
+                      ]}
+                    >
                       {sendEmail && <Text style={styles.checkmark}>✓</Text>}
                     </View>
                     <Text style={styles.checkboxLabel}>By Email</Text>
@@ -305,7 +311,12 @@ export default function RestaurantMenuScreen() {
                     style={styles.checkboxRow}
                     onPress={() => setSendSMS(!sendSMS)}
                   >
-                    <View style={[styles.checkbox, sendSMS && styles.checkboxChecked]}>
+                    <View
+                      style={[
+                        styles.checkbox,
+                        sendSMS && styles.checkboxChecked,
+                      ]}
+                    >
                       {sendSMS && <Text style={styles.checkmark}>✓</Text>}
                     </View>
                     <Text style={styles.checkboxLabel}>By Phone</Text>
