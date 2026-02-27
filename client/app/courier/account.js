@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -28,19 +28,25 @@ export default function CourierAccount() {
   const [courierEmail, setCourierEmail] = useState("");
   const [courierPhone, setCourierPhone] = useState("");
 
+  // Global user ID loaded once from AsyncStorage
+  const [userId, setUserId] = useState(null);
+
   // Tracks whether the page is still loading data from the API
   const [loading, setLoading] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  // useEffect runs once when the screen loads
-  // It fetches the account data from the backend and populates the fields
-  useEffect(() => {
-    fetchAccountData();
-  }, []);
+  // useFocusEffect re-fetches data every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchAccountData();
+    }, []),
+  );
   // Fetches account data from GET /api/account/{id}?type=courier
   const fetchAccountData = async () => {
     try {
-      const userId = await AsyncStorage.getItem("user_id");
+      const storedUserId = await AsyncStorage.getItem("user_id");
+      setUserId(storedUserId);
+      const userId = storedUserId;
 
       const response = await fetch(
         `${API_URL}/api/account/${userId}?type=courier`,
