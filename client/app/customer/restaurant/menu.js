@@ -241,6 +241,13 @@ export default function RestaurantMenuScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Order Confirmation</Text>
+              <TouchableOpacity onPress={closeModalAndReset}>
+                <Text style={styles.closeButton}>✕</Text>
+              </TouchableOpacity>
+            </View>
             {/* Order Summary Section */}
             {!orderStatus && (
               <View style={styles.orderSummarySection}>
@@ -266,12 +273,11 @@ export default function RestaurantMenuScreen() {
                   </View>
                 ))}
                 <View style={styles.totalRow}>
-                  <Text style={styles.totalLabel}>Order Total:</Text>
+                  <Text style={styles.totalLabel}>TOTAL:</Text>
                   <Text style={styles.totalAmount}>
-                    ${getTotalCost().toFixed(2)}
+                    $ {getTotalCost().toFixed(2)}
                   </Text>
                 </View>
-              </View>
             )}
 
             {/* Notification Options */}
@@ -283,34 +289,28 @@ export default function RestaurantMenuScreen() {
                   and/or text?
                 </Text>
 
-                {/* By Email Checkbox */}
-                <TouchableOpacity
-                  style={styles.checkboxRow}
-                  onPress={() => setSendEmail(!sendEmail)}
-                >
-                  <View
-                    style={[
-                      styles.checkbox,
-                      sendEmail && styles.checkboxChecked,
-                    ]}
+                {/* Checkboxes in a single row */}
+                <View style={styles.checkboxRowContainer}>
+                  <TouchableOpacity
+                    style={styles.checkboxRow}
+                    onPress={() => setSendEmail(!sendEmail)}
                   >
-                    {sendEmail && <Text style={styles.checkmark}>✓</Text>}
-                  </View>
-                  <Text style={styles.checkboxLabel}>By Email</Text>
-                </TouchableOpacity>
+                    <View style={[styles.checkbox, sendEmail && styles.checkboxChecked]}>
+                      {sendEmail && <Text style={styles.checkmark}>✓</Text>}
+                    </View>
+                    <Text style={styles.checkboxLabel}>By Email</Text>
+                  </TouchableOpacity>
 
-                {/* By Phone Checkbox */}
-                <TouchableOpacity
-                  style={styles.checkboxRow}
-                  onPress={() => setSendSMS(!sendSMS)}
-                >
-                  <View
-                    style={[styles.checkbox, sendSMS && styles.checkboxChecked]}
+                  <TouchableOpacity
+                    style={styles.checkboxRow}
+                    onPress={() => setSendSMS(!sendSMS)}
                   >
-                    {sendSMS && <Text style={styles.checkmark}>✓</Text>}
-                  </View>
-                  <Text style={styles.checkboxLabel}>By Phone</Text>
-                </TouchableOpacity>
+                    <View style={[styles.checkbox, sendSMS && styles.checkboxChecked]}>
+                      {sendSMS && <Text style={styles.checkmark}>✓</Text>}
+                    </View>
+                    <Text style={styles.checkboxLabel}>By Phone</Text>
+                  </TouchableOpacity>
+                </View>
 
                 {/* CONFIRM ORDER button — disabled while API call is in progress */}
                 <TouchableOpacity
@@ -341,33 +341,13 @@ export default function RestaurantMenuScreen() {
             )}
 
             {orderStatus === "error" && (
-              <>
+              <View style={styles.statusSection}>
                 <Text style={styles.errorIcon}>✗</Text>
                 <Text style={styles.modalText}>Order Failed</Text>
                 <Text style={styles.modalSubtext}>
                   An error occurred while processing your order.
                 </Text>
-                {/* Confirm Button */}
-                {/* Disabled with 'In Progress' text while waiting for API response */}
-                <TouchableOpacity
-                  style={[
-                    styles.confirmButton,
-                    orderStatus === "loading" && styles.disabledButton,
-                  ]}
-                  onPress={
-                    orderStatus === null
-                      ? handleCreateOrder
-                      : closeModalAndReset
-                  }
-                  disabled={orderStatus === "loading"}
-                >
-                  <Text style={styles.confirmButtonText}>
-                    {orderStatus === "loading"
-                      ? "In Progress"
-                      : "CONFIRM ORDER"}
-                  </Text>
-                </TouchableOpacity>
-              </>
+              </View>
             )}
           </View>
         </View>
@@ -709,11 +689,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 16,
   },
+  checkboxRowContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 24,
+    marginBottom: 12,
+  },
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
-    justifyContent: "center",
   },
   checkbox: {
     width: 20,

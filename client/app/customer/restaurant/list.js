@@ -92,39 +92,87 @@ export default function RestaurantListScreen() {
       {/* Filters */}
       <View style={styles.filtersContainer}>
         <View style={styles.filterRow}>
+          {/* Rating Filter */}
           <View style={styles.filterGroup}>
             <Text style={styles.filterLabel}>Rating</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={selectedRating}
-                onValueChange={(value) =>
-                  setSelectedRating(value === "" ? null : value)
-                }
-                style={styles.picker}
+            <View style={styles.filterButtonsRow}>
+              <TouchableOpacity
+                style={[
+                  styles.filterButton,
+                  selectedRating === null && styles.filterButtonActive,
+                ]}
+                onPress={() => setSelectedRating(null)}
               >
-                <Picker.Item label="-- Select --" value="" />
-                {[1, 2, 3, 4, 5].map((r) => (
-                  <Picker.Item key={r} label={`${r} ★`} value={r} />
-                ))}
-              </Picker>
+                <Text
+                  style={[
+                    styles.filterButtonText,
+                    selectedRating === null && styles.filterButtonTextActive,
+                  ]}
+                >
+                  All
+                </Text>
+              </TouchableOpacity>
+              {[1, 2, 3, 4, 5].map((r) => (
+                <TouchableOpacity
+                  key={r}
+                  style={[
+                    styles.filterButton,
+                    selectedRating === r && styles.filterButtonActive,
+                  ]}
+                  onPress={() => setSelectedRating(r)}
+                >
+                  <Text
+                    style={[
+                      styles.filterButtonText,
+                      selectedRating === r && styles.filterButtonTextActive,
+                    ]}
+                  >
+                    {r}★
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
 
+          {/* Price Filter */}
           <View style={styles.filterGroup}>
             <Text style={styles.filterLabel}>Price</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={selectedPrice}
-                onValueChange={(value) =>
-                  setSelectedPrice(value === "" ? null : value)
-                }
-                style={styles.picker}
+            <View style={styles.filterButtonsRow}>
+              <TouchableOpacity
+                style={[
+                  styles.filterButton,
+                  selectedPrice === null && styles.filterButtonActive,
+                ]}
+                onPress={() => setSelectedPrice(null)}
               >
-                <Picker.Item label="-- Select --" value="" />
-                {[1, 2, 3].map((p) => (
-                  <Picker.Item key={p} label={"$".repeat(p)} value={p} />
-                ))}
-              </Picker>
+                <Text
+                  style={[
+                    styles.filterButtonText,
+                    selectedPrice === null && styles.filterButtonTextActive,
+                  ]}
+                >
+                  All
+                </Text>
+              </TouchableOpacity>
+              {[1, 2, 3].map((p) => (
+                <TouchableOpacity
+                  key={p}
+                  style={[
+                    styles.filterButton,
+                    selectedPrice === p && styles.filterButtonActive,
+                  ]}
+                  onPress={() => setSelectedPrice(p)}
+                >
+                  <Text
+                    style={[
+                      styles.filterButtonText,
+                      selectedPrice === p && styles.filterButtonTextActive,
+                    ]}
+                  >
+                    {"$".repeat(p)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         </View>
@@ -199,16 +247,33 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#222126",
-    marginBottom: 4,
+    marginBottom: 8,
   },
-  pickerWrapper: {
+  filterButtonsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  filterButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: "#F5F5F5",
+    borderWidth: 1,
+    borderColor: "#DDD",
+  },
+  filterButtonActive: {
     backgroundColor: "#DA583B",
-    borderRadius: 4,
-    overflow: "hidden",
+    borderColor: "#DA583B",
   },
-  picker: {
+  filterButtonText: {
+    fontFamily: "Arial",
+    fontSize: 12,
+    color: "#666",
+    fontWeight: "600",
+  },
+  filterButtonTextActive: {
     color: "#FFFFFF",
-    backgroundColor: "#DA583B",
   },
   listContent: {
     padding: 16,
