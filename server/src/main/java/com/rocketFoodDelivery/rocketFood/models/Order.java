@@ -72,6 +72,14 @@ public class Order {
     @Column(name = "timestamp", nullable = false, updatable = false)
     private LocalDateTime timestamp;
 
+    // Whether the customer requested an email confirmation
+    @Column(name = "send_email", nullable = false)
+    private boolean sendEmail;
+
+    // Whether the customer requested an SMS confirmation
+    @Column(name = "send_sms", nullable = false)
+    private boolean sendSms;
+
     // Getters and Setters
     public OrderStatus getOrderStatus() {
         return orderStatus;

@@ -186,6 +186,8 @@ public class OrderService {
         
             // Set default or valid restaurant rating
             order.setRestaurant_rating(1); // Adjust this as needed
+            order.setSendEmail(apiOrderDTO.isSendEmail());
+            order.setSendSms(apiOrderDTO.isSendSMS());
         
             // Set the initial status of the order
             order.setOrderStatus(status); // Default status, could be updated later
