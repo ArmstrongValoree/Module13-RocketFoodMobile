@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -95,87 +96,39 @@ export default function RestaurantListScreen() {
       {/* Filters */}
       <View style={styles.filtersContainer}>
         <View style={styles.filterRow}>
-          {/* Rating Filter */}
           <View style={styles.filterGroup}>
             <Text style={styles.filterLabel}>Rating</Text>
-            <View style={styles.filterButtonsRow}>
-              <TouchableOpacity
-                style={[
-                  styles.filterButton,
-                  selectedRating === null && styles.filterButtonActive,
-                ]}
-                onPress={() => setSelectedRating(null)}
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedRating}
+                onValueChange={(value) =>
+                  setSelectedRating(value === "" ? null : value)
+                }
+                style={styles.picker}
               >
-                <Text
-                  style={[
-                    styles.filterButtonText,
-                    selectedRating === null && styles.filterButtonTextActive,
-                  ]}
-                >
-                  All
-                </Text>
-              </TouchableOpacity>
-              {[1, 2, 3, 4, 5].map((r) => (
-                <TouchableOpacity
-                  key={r}
-                  style={[
-                    styles.filterButton,
-                    selectedRating === r && styles.filterButtonActive,
-                  ]}
-                  onPress={() => setSelectedRating(r)}
-                >
-                  <Text
-                    style={[
-                      styles.filterButtonText,
-                      selectedRating === r && styles.filterButtonTextActive,
-                    ]}
-                  >
-                    {r}★
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                <Picker.Item label="-- Select --" value="" />
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <Picker.Item key={r} label={`${r} ★`} value={r} />
+                ))}
+              </Picker>
             </View>
           </View>
 
-          {/* Price Filter */}
           <View style={styles.filterGroup}>
             <Text style={styles.filterLabel}>Price</Text>
-            <View style={styles.filterButtonsRow}>
-              <TouchableOpacity
-                style={[
-                  styles.filterButton,
-                  selectedPrice === null && styles.filterButtonActive,
-                ]}
-                onPress={() => setSelectedPrice(null)}
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedPrice}
+                onValueChange={(value) =>
+                  setSelectedPrice(value === "" ? null : value)
+                }
+                style={styles.picker}
               >
-                <Text
-                  style={[
-                    styles.filterButtonText,
-                    selectedPrice === null && styles.filterButtonTextActive,
-                  ]}
-                >
-                  All
-                </Text>
-              </TouchableOpacity>
-              {[1, 2, 3].map((p) => (
-                <TouchableOpacity
-                  key={p}
-                  style={[
-                    styles.filterButton,
-                    selectedPrice === p && styles.filterButtonActive,
-                  ]}
-                  onPress={() => setSelectedPrice(p)}
-                >
-                  <Text
-                    style={[
-                      styles.filterButtonText,
-                      selectedPrice === p && styles.filterButtonTextActive,
-                    ]}
-                  >
-                    {"$".repeat(p)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                <Picker.Item label="-- Select --" value="" />
+                {[1, 2, 3].map((p) => (
+                  <Picker.Item key={p} label={"$".repeat(p)} value={p} />
+                ))}
+              </Picker>
             </View>
           </View>
         </View>
@@ -259,33 +212,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#222126",
-    marginBottom: 8,
+    marginBottom: 4,
   },
-  filterButtonsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  filterButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: "#F5F5F5",
-    borderWidth: 1,
-    borderColor: "#DDD",
-  },
-  filterButtonActive: {
+  pickerWrapper: {
     backgroundColor: "#DA583B",
-    borderColor: "#DA583B",
+    borderRadius: 4,
+    overflow: "hidden",
   },
-  filterButtonText: {
-    fontFamily: "Arial",
-    fontSize: 12,
-    color: "#666",
-    fontWeight: "600",
-  },
-  filterButtonTextActive: {
+  picker: {
     color: "#FFFFFF",
+    backgroundColor: "#DA583B",
   },
   listContent: {
     padding: 16,
