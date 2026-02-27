@@ -61,20 +61,20 @@ export default function SelectionScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#1a1a1a",
+    backgroundColor: "#ffffff",
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
   },
   logo: {
-    width: 220,
-    height: 120,
+    width: 300,
+    height: 160,
     marginBottom: 32,
   },
   title: {
     fontFamily: "Oswald",
     fontSize: 22,
-    color: "#ffffff",
+    color: "#2c2c2c",
     marginBottom: 40,
   },
   buttonRow: {
