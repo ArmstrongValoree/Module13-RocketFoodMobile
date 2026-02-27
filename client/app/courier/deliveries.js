@@ -4,15 +4,16 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
 import {
-    ActivityIndicator,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -39,11 +40,12 @@ export default function CourierDeliveries() {
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // useEffect runs once when the screen loads
-  // It fetches the courier's deliveries from the backend
-  useEffect(() => {
-    fetchDeliveries();
-  }, []);
+  // useFocusEffect re-fetches deliveries every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchDeliveries();
+    }, []),
+  );
 
   // Fetches deliveries from GET /api/orders?type=courier&id={courierId}
   const fetchDeliveries = async () => {
@@ -123,7 +125,7 @@ export default function CourierDeliveries() {
 
     try {
       // Step 1 — If moving to IN PROGRESS, assign this courier to the order first
-      if (nextStatus === "IN PROGRESS") {
+      if (nextStatus === "in progress") {
         const courierResponse = await fetch(
           `${API_URL}/api/order/${deliveryId}/courier`,
           {
@@ -159,14 +161,8 @@ export default function CourierDeliveries() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Update the local state so the UI reflects the change immediately
-      setDeliveries((prev) =>
-        prev.map((delivery) =>
-          delivery.id === deliveryId
-            ? { ...delivery, status: nextStatus }
-            : delivery,
-        ),
-      );
+      // Re-fetch the full list so the UI reflects the latest state from the database
+      await fetchDeliveries();
     } catch (error) {
       console.error("Error updating delivery status:", error);
     }
