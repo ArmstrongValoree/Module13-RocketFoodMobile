@@ -172,6 +172,17 @@ export default function CourierDeliveries() {
     }
   };
 
+  // Formats a date string to MM/DD/YYYY format
+  const formatOrderDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    if (isNaN(date)) return dateString; // Return original if invalid
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
   // Opens the delivery detail modal for the selected order
   const handleViewPress = (delivery) => {
     setSelectedDelivery(delivery);
@@ -288,7 +299,7 @@ export default function CourierDeliveries() {
                 Restaurant: {selectedDelivery?.restaurant}
               </Text>
               <Text style={styles.modalText}>
-                Order Date: {selectedDelivery?.orderDate}
+                Order Date: {formatOrderDate(selectedDelivery?.orderDate)}
               </Text>
 
               {/* Order Details Label */}
