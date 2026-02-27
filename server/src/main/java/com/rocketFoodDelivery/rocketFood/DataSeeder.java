@@ -1,17 +1,39 @@
 package com.rocketFoodDelivery.rocketFood;
 
-import com.github.javafaker.Faker;
-import com.rocketFoodDelivery.rocketFood.models.*;
-import com.rocketFoodDelivery.rocketFood.repository.*;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+
+import org.springframework.stereotype.Component;
+
+import com.github.javafaker.Faker;
+import com.rocketFoodDelivery.rocketFood.models.Address;
+import com.rocketFoodDelivery.rocketFood.models.Courier;
+import com.rocketFoodDelivery.rocketFood.models.CourierStatus;
+import com.rocketFoodDelivery.rocketFood.models.Customer;
+import com.rocketFoodDelivery.rocketFood.models.Employee;
+import com.rocketFoodDelivery.rocketFood.models.Order;
+import com.rocketFoodDelivery.rocketFood.models.OrderStatus;
+import com.rocketFoodDelivery.rocketFood.models.Product;
+import com.rocketFoodDelivery.rocketFood.models.ProductOrder;
+import com.rocketFoodDelivery.rocketFood.models.Restaurant;
+import com.rocketFoodDelivery.rocketFood.models.UserEntity;
+import com.rocketFoodDelivery.rocketFood.repository.AddressRepository;
+import com.rocketFoodDelivery.rocketFood.repository.CourierRepository;
+import com.rocketFoodDelivery.rocketFood.repository.CourierStatusRepository;
+import com.rocketFoodDelivery.rocketFood.repository.CustomerRepository;
+import com.rocketFoodDelivery.rocketFood.repository.EmployeeRepository;
+import com.rocketFoodDelivery.rocketFood.repository.OrderRepository;
+import com.rocketFoodDelivery.rocketFood.repository.OrderStatusRepository;
+import com.rocketFoodDelivery.rocketFood.repository.ProductOrderRepository;
+import com.rocketFoodDelivery.rocketFood.repository.ProductRepository;
+import com.rocketFoodDelivery.rocketFood.repository.RestaurantRepository;
+import com.rocketFoodDelivery.rocketFood.repository.UserRepository;
+
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -201,31 +223,13 @@ public class DataSeeder {
        List<UserEntity> users = userRepository.findAll();
        List<Address> addresses = addressRepository.findAll();
        
-       // Customer #1 - user id 1 (index 0) - both@gmail.com
-       customers.add(Customer.builder()
-               .userEntity(users.get(0))
-               .address(addresses.get(13))
-               .phone("+1-555-3000")
-               .email(users.get(0).getEmail())
-               .active(true)
-               .build());
-       
-       // Customer #2 - user id 2 (index 1) - customer@gmail.com
-       customers.add(Customer.builder()
-               .userEntity(users.get(1))
-               .address(addresses.get(14))
-               .phone("+1-555-3001")
-               .email(users.get(1).getEmail())
-               .active(true)
-               .build());
-       
-       // Create remaining 6 customers using users[15-20] and addresses[15-20]
-       for (int i = 2; i < 8; i++) {
+       // Create a customer record for each user
+       for (int i = 0; i < users.size(); i++) {
            customers.add(Customer.builder()
-                   .userEntity(users.get(13 + i))
-                   .address(addresses.get(13 + i))
+                   .userEntity(users.get(i))
+                   .address(addresses.get(i % addresses.size()))
                    .phone("+1-555-" + String.format("%04d", 3000 + i))
-                   .email("customer" + i + "@" + faker.internet().domainName())
+                   .email(users.get(i).getEmail())
                    .active(true)
                    .build());
        }
@@ -245,33 +249,13 @@ public class DataSeeder {
        List<Address> addresses = addressRepository.findAll();
        List<CourierStatus> courierStatuses = courierStatusRepository.findAll();
        
-       // Courier #1 - user id 1 (index 0) - both@gmail.com
-       couriers.add(Courier.builder()
-               .userEntity(users.get(0))
-               .address(addresses.get(21))
-               .phone("+1-555-4000")
-               .email(users.get(0).getEmail())
-               .courierStatus(courierStatuses.get(0))
-               .active(true)
-               .build());
-       
-       // Courier #2 - user id 3 (index 2) - courier@gmail.com
-       couriers.add(Courier.builder()
-               .userEntity(users.get(2))
-               .address(addresses.get(22))
-               .phone("+1-555-4001")
-               .email(users.get(2).getEmail())
-               .courierStatus(courierStatuses.get(1 % courierStatuses.size()))
-               .active(true)
-               .build());
-       
-       // Create remaining 6 couriers using users[23-28] and addresses[23-28]
-       for (int i = 2; i < 8; i++) {
+       // Create a courier record for each user
+       for (int i = 0; i < users.size(); i++) {
            couriers.add(Courier.builder()
-                   .userEntity(users.get(21 + i))
-                   .address(addresses.get(21 + i))
+                   .userEntity(users.get(i))
+                   .address(addresses.get((i + 10) % addresses.size()))
                    .phone("+1-555-" + String.format("%04d", 4000 + i))
-                   .email("courier" + i + "@" + faker.internet().domainName())
+                   .email(users.get(i).getEmail())
                    .courierStatus(courierStatuses.get(i % courierStatuses.size()))
                    .active(true)
                    .build());
