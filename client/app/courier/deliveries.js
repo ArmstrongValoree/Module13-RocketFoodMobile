@@ -3,9 +3,8 @@
 // Connects to: PUT /api/order/{id}/status — updates delivery status
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Modal,
@@ -40,18 +39,12 @@ export default function CourierDeliveries() {
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // useFocusEffect re-fetches deliveries every time the screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      fetchDeliveries();
-    }, []),
-  );
-
   // Fetches deliveries from GET /api/orders?type=courier&id={courierId}
   const fetchDeliveries = async () => {
     try {
+      const type = await AsyncStorage.getItem("type");
       const courierId = await AsyncStorage.getItem("courier_id");
-      console.log("DEBUG: courierId=", courierId);
+      console.log("DEBUG: type=", type, "courierId=", courierId);
 
       const response = await fetch(
         `${API_URL}/api/orders?type=courier&id=${courierId}`,
@@ -99,6 +92,13 @@ export default function CourierDeliveries() {
     }
   };
 
+  // useFocusEffect re-fetches deliveries every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchDeliveries();
+    }, []),
+  );
+
   // Returns the background color for each status button
   const getStatusColor = (status) => {
     if (status === "pending") return "#c0392b";
@@ -122,6 +122,12 @@ export default function CourierDeliveries() {
 
     const nextStatus = getNextStatus(currentStatus);
     const courierId = await AsyncStorage.getItem("courier_id");
+    console.log(
+      "DEBUG: handleStatusPress courierId=",
+      courierId,
+      "nextStatus=",
+      nextStatus,
+    );
 
     try {
       // Step 1 — If moving to IN PROGRESS, assign this courier to the order first
