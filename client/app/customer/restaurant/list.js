@@ -69,17 +69,6 @@ export default function RestaurantListScreen() {
     );
   };
 
-  const FilterButton = ({ title, value, onPress, isSelected }) => (
-    <TouchableOpacity
-      style={[styles.filterButton, isSelected && styles.filterButtonActive]}
-      onPress={onPress}
-    >
-      <Text style={[styles.filterText, isSelected && styles.filterTextActive]}>
-        {title}
-      </Text>
-    </TouchableOpacity>
-  );
-
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -102,40 +91,42 @@ export default function RestaurantListScreen() {
 
       {/* Filters */}
       <View style={styles.filtersContainer}>
-        <Text style={styles.filterLabel}>Rating:</Text>
         <View style={styles.filterRow}>
-          <FilterButton
-            title="Select"
-            onPress={() => setSelectedRating(null)}
-            isSelected={selectedRating === null}
-          />
-          {[1, 2, 3, 4, 5].map((rating) => (
-            <FilterButton
-              key={rating}
-              title={`${rating}★`}
-              value={rating}
-              onPress={() => setSelectedRating(rating)}
-              isSelected={selectedRating === rating}
-            />
-          ))}
-        </View>
+          <View style={styles.filterGroup}>
+            <Text style={styles.filterLabel}>Rating</Text>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedRating}
+                onValueChange={(value) =>
+                  setSelectedRating(value === "" ? null : value)
+                }
+                style={styles.picker}
+              >
+                <Picker.Item label="-- Select --" value="" />
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <Picker.Item key={r} label={`${r} ★`} value={r} />
+                ))}
+              </Picker>
+            </View>
+          </View>
 
-        <Text style={styles.filterLabel}>Price Range:</Text>
-        <View style={styles.filterRow}>
-          <FilterButton
-            title="Select"
-            onPress={() => setSelectedPrice(null)}
-            isSelected={selectedPrice === null}
-          />
-          {[1, 2, 3].map((price) => (
-            <FilterButton
-              key={price}
-              title={"$".repeat(price)}
-              value={price}
-              onPress={() => setSelectedPrice(price)}
-              isSelected={selectedPrice === price}
-            />
-          ))}
+          <View style={styles.filterGroup}>
+            <Text style={styles.filterLabel}>Price</Text>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedPrice}
+                onValueChange={(value) =>
+                  setSelectedPrice(value === "" ? null : value)
+                }
+                style={styles.picker}
+              >
+                <Picker.Item label="-- Select --" value="" />
+                {[1, 2, 3].map((p) => (
+                  <Picker.Item key={p} label={"$".repeat(p)} value={p} />
+                ))}
+              </Picker>
+            </View>
+          </View>
         </View>
       </View>
 
@@ -195,39 +186,29 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#DDD",
   },
+  filterRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  filterGroup: {
+    flex: 1,
+  },
   filterLabel: {
     fontFamily: "Arial",
     fontSize: 14,
     fontWeight: "bold",
     color: "#222126",
-    marginTop: 8,
     marginBottom: 4,
   },
-  filterRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  filterButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 4,
-  },
-  filterButtonActive: {
+  pickerWrapper: {
     backgroundColor: "#DA583B",
-    borderColor: "#DA583B",
+    borderRadius: 4,
+    overflow: "hidden",
   },
-  filterText: {
-    fontFamily: "Arial",
-    fontSize: 13,
-    color: "#222126",
-  },
-  filterTextActive: {
+  picker: {
     color: "#FFFFFF",
-    fontWeight: "bold",
+    backgroundColor: "#DA583B",
   },
   listContent: {
     padding: 16,
