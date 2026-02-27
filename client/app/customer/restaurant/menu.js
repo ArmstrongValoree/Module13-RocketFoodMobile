@@ -192,7 +192,7 @@ export default function RestaurantMenuScreen() {
             router.replace("/");
           }}
         >
-          <Text style={styles.logoutText}>Log Out</Text>
+          <Text style={styles.logoutText}>LOG OUT</Text>
         </TouchableOpacity>
       </View>
 
