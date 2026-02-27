@@ -89,6 +89,9 @@ export default function RestaurantListScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Section Title */}
+      <Text style={styles.sectionTitle}>NEARBY RESTAURANTS</Text>
+
       {/* Filters */}
       <View style={styles.filtersContainer}>
         <View style={styles.filterRow}>
@@ -227,6 +230,15 @@ const styles = StyleSheet.create({
     fontFamily: "Arial",
     fontSize: 14,
     fontWeight: "bold",
+  },
+  sectionTitle: {
+    fontFamily: "Oswald",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#222126",
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 4,
   },
   filtersContainer: {
     padding: 16,

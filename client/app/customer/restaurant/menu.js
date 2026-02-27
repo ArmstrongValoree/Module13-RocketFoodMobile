@@ -101,6 +101,9 @@ export default function RestaurantMenuScreen() {
         sendSMS,
       );
       setOrderStatus("success");
+      setTimeout(() => {
+        closeModalAndReset();
+      }, 2000);
     } catch (error) {
       console.error("Order creation failed:", error);
       setOrderStatus("error");
