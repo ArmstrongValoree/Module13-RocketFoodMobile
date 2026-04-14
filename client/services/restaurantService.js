@@ -26,7 +26,6 @@ export const restaurantService = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
         },
       });
 
@@ -53,7 +52,6 @@ export const restaurantService = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
         },
       });
 

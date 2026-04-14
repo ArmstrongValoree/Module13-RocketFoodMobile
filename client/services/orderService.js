@@ -36,16 +36,10 @@ export const orderService = {
         sendSMS: sendSMS,
       };
 
-      console.log(
-        "Creating order with data:",
-        JSON.stringify(orderData, null, 2),
-      );
-
       const response = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify(orderData),
       });
@@ -71,17 +65,12 @@ export const orderService = {
       const customerId = await AsyncStorage.getItem("customer_id");
       const type = "customer";
 
-      console.log(
-        `Fetching order history for customer_id=${customerId} with type=${type}`,
-      );
-
       const response = await fetch(
         `${API_URL}/api/orders?type=${type}&id=${customerId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
           },
         },
       );
@@ -109,7 +98,6 @@ export const orderService = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
         },
       });
 
