@@ -72,10 +72,18 @@ Scan the QR code with Expo Go, or press `a` for Android emulator / `i` for iOS s
 This app is designed to run on a real mobile device via **Expo Go** (free on iOS and Android).
 
 1. Install [Expo Go](https://expo.dev/go) on your phone
-2. Scan the QR code below *(link to be added after Expo publish)*
+2. Scan the QR code below *(to be added after Expo publish)*
 3. The app loads instantly — no install required
 
 > The Spring Boot API is deployed on Render. Free-tier services spin down after inactivity — the first request may take 30–60 seconds.
+
+**Demo credentials** — all three accounts use password `password`
+
+| Email | Role |
+|-------|------|
+| `both@gmail.com` | Customer + Courier (dual-role) |
+| `customer@gmail.com` | Customer only |
+| `courier@gmail.com` | Courier only |
 
 ## Portfolio Updates vs. Original Assignments (Modules 13 & 14)
 

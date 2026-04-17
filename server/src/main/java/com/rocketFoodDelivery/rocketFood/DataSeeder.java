@@ -34,6 +34,7 @@ import com.rocketFoodDelivery.rocketFood.repository.UserRepository;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Component
 @RequiredArgsConstructor
@@ -50,6 +51,7 @@ public class DataSeeder {
    private final AddressRepository addressRepository;
    private final CourierStatusRepository courierStatusRepository;
    private final CourierRepository courierRepository;
+   private final PasswordEncoder passwordEncoder;
    private final Faker faker = new Faker();
 
    @PostConstruct
@@ -79,33 +81,35 @@ public class DataSeeder {
        // Create 30 users for all entities (restaurants, employees, customers, couriers)
        List<UserEntity> users = new ArrayList<>();
        
+       String demoPassword = passwordEncoder.encode("password");
+
        // User #1 (index 0) - both@gmail.com - will be customer #1 and courier #1
        users.add(UserEntity.builder()
                .name(faker.name().fullName())
                .email("both@gmail.com")
-               .password("password")
+               .password(demoPassword)
                .build());
-       
+
        // User #2 (index 1) - customer@gmail.com - will be customer #2
        users.add(UserEntity.builder()
                .name(faker.name().fullName())
                .email("customer@gmail.com")
-               .password("password")
+               .password(demoPassword)
                .build());
-       
+
        // User #3 (index 2) - courier@gmail.com - will be courier #2
        users.add(UserEntity.builder()
                .name(faker.name().fullName())
                .email("courier@gmail.com")
-               .password("password")
+               .password(demoPassword)
                .build());
-       
+
        // Create remaining users (index 3-29)
        for (int i = 3; i < 30; i++) {
            users.add(UserEntity.builder()
                    .name(faker.name().fullName())
                    .email("user" + i + "@" + faker.internet().domainName())
-                   .password("password" + i)
+                   .password(demoPassword)
                    .build());
        }
        
