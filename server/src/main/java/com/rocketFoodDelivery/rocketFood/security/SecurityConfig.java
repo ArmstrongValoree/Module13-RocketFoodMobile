@@ -13,9 +13,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,6 +24,9 @@ public class SecurityConfig {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    JwtTokenFilter jwtTokenFilter;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -41,40 +45,24 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    @SuppressWarnings({ "removal", "deprecation" })
+    @SuppressWarnings("deprecation")
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests()
-            .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/api/auth").permitAll()
-                .requestMatchers("/backoffice/**").permitAll()
-                .requestMatchers("/api/restaurants").permitAll()
-                .requestMatchers("/api/products").permitAll()
-                .requestMatchers("/api/orders").permitAll()
-                .requestMatchers("/api/orders/**").permitAll()
-                .requestMatchers("/api/restaurants/**").permitAll()
-                .requestMatchers("/api/account/**").permitAll()
-                .requestMatchers("/api/orders/*/status").permitAll()
                 .anyRequest().authenticated();
         http.exceptionHandling()
                 .authenticationEntryPoint(
-                        (request, response, ex) -> {
-                            response.sendError(
-                                    HttpServletResponse.SC_UNAUTHORIZED,
-                                    ex.getMessage()
-                            );
-                        }
-                );
-        // Remove or comment out the line below if you no longer use JwtTokenFilter
-        // http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                        (request, response, ex) -> response.sendError(
+                                HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()));
+        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    @SuppressWarnings("deprecation")
     @Bean
     public PasswordEncoder getPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 }

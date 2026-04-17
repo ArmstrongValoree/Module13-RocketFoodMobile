@@ -67,6 +67,32 @@ npm start
 
 Scan the QR code with Expo Go, or press `a` for Android emulator / `i` for iOS simulator.
 
+## Try the App
+
+This app is designed to run on a real mobile device via **Expo Go** (free on iOS and Android).
+
+1. Install [Expo Go](https://expo.dev/go) on your phone
+2. Scan the QR code below *(link to be added after Expo publish)*
+3. The app loads instantly — no install required
+
+> The Spring Boot API is deployed on Render. Free-tier services spin down after inactivity — the first request may take 30–60 seconds.
+
+## Portfolio Updates vs. Original Assignments (Modules 13 & 14)
+
+This project was originally built across two modules: Module 13 introduced the customer mobile app with a Spring Boot backend, and Module 14 added the Courier app, account management, dual-role login, and SMS/email order notifications. The following changes were made for portfolio deployment:
+
+| Change | Why |
+|--------|-----|
+| Implemented **JWT token generation** in `JwtUtil` | `JwtUtil` was an empty stub — the server never generated tokens, so the client fell back to a hardcoded `"temp-token"` string |
+| Implemented **JWT validation** in `JwtTokenFilter` | The filter passed every request through without checking — all endpoints were effectively public |
+| Switched from `NoOpPasswordEncoder` to **BCryptPasswordEncoder** | Plaintext password storage is a baseline security requirement to fix before any public deployment |
+| Added `@Autowired JwtUtil` to `AuthController` and set `accessToken` on the login response | The `AuthResponseSuccessDTO` had an `accessToken` field that was never populated |
+| Locked down all routes except `/api/auth` in `SecurityConfig` | All API routes were `permitAll()` — authentication was declared but not enforced |
+| Externalized all secrets and DB config to **environment variables** | DB credentials, JWT secret, and Twilio keys were hardcoded in `application.properties` |
+| Fixed **CORS** to use `app.cors.allowed-origins` env var | `allowedOrigins("*")` accepted requests from any domain — appropriate for development, not production |
+| Replaced dead ngrok URL in `client/.env` with `localhost:8080` | The dev `.env` pointed to a temporary tunnel URL that no longer resolves |
+| Added `application.properties.example` and `client/.env.example` | No templates existed — contributors had no way to know what configuration was required |
+
 ## App Structure
 
 ```

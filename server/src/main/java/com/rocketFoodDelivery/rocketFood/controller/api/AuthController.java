@@ -26,6 +26,7 @@ import com.rocketFoodDelivery.rocketFood.models.UserEntity;
 import com.rocketFoodDelivery.rocketFood.repository.CourierRepository;
 import com.rocketFoodDelivery.rocketFood.repository.CustomerRepository;
 import com.rocketFoodDelivery.rocketFood.repository.UserRepository;
+import com.rocketFoodDelivery.rocketFood.security.JwtUtil;
 
 import jakarta.validation.Valid;
 
@@ -37,6 +38,9 @@ public class AuthController {
 
     @Autowired
     AuthenticationManager authManager;
+
+    @Autowired
+    JwtUtil jwtUtil;
 
     public AuthController(CourierRepository courierRepository, CustomerRepository customerRepository, UserRepository userRepository){
         this.courierRepository = courierRepository;
@@ -55,11 +59,14 @@ public class AuthController {
             Optional<Courier> courier = courierRepository.findByUserEntityId(user.getId());
             Optional<Customer> customer = customerRepository.findByUserEntityId(user.getId());
 
+            String token = jwtUtil.generateToken(user.getEmail());
+
             AuthResponseSuccessDTO response = new AuthResponseSuccessDTO();
-            if(courier.isPresent()){
+            response.setAccessToken(token);
+            if (courier.isPresent()) {
                 response.setCourier_id(courier.get().getId());
             }
-            if (customer.isPresent()){
+            if (customer.isPresent()) {
                 response.setCustomer_id(customer.get().getId());
             }
             response.setSuccess(true);
