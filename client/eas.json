@@ -4,11 +4,7 @@
   },
   "build": {
     "preview": {
-      "distribution": "internal"
-    }
-  },
-  "update": {
-    "preview": {
+      "distribution": "internal",
       "channel": "preview"
     }
   }

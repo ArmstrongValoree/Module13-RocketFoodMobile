@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "runtimeVersion": "1.0.0",
     "updates": {
-      "url": "https://u.expo.dev/placeholder-project-id"
+      "url": "https://u.expo.dev/a9cec3d5-afe8-4b36-8ea4-4320e1a3c8b0"
     },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -47,6 +47,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a9cec3d5-afe8-4b36-8ea4-4320e1a3c8b0"
+      }
     }
   }
 }
