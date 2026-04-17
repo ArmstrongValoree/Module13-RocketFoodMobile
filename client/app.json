@@ -3,6 +3,10 @@
     "name": "Module13-RocketFoodMobile",
     "slug": "Module13-RocketFoodMobile",
     "version": "1.0.0",
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/placeholder-project-id"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "module13rocketfoodmobile",
