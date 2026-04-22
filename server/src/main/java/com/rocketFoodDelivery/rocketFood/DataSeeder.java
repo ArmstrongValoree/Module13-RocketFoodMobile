@@ -57,7 +57,7 @@ public class DataSeeder {
    @PostConstruct
    public void seedData() {
        System.out.println("Starting database seeding...");
-       
+
        seedUsers();
        seedAddresses();
        seedOrderStatuses();
@@ -68,8 +68,22 @@ public class DataSeeder {
        seedCouriers();
        seedProducts();
        seedOrdersAndProductOrders();
-       
+       fixPlaintextPasswords();
+
        System.out.println("✓ Database seeding process completed!");
+   }
+
+   private void fixPlaintextPasswords() {
+       String[] demoEmails = {"both@gmail.com", "customer@gmail.com", "courier@gmail.com"};
+       for (String email : demoEmails) {
+           userRepository.findByEmail(email).ifPresent(user -> {
+               if (!user.getPassword().startsWith("$2")) {
+                   user.setPassword(passwordEncoder.encode(user.getPassword()));
+                   userRepository.save(user);
+                   System.out.println("✓ Re-hashed password for " + email);
+               }
+           });
+       }
    }
 
    private void seedUsers() {
