@@ -100,6 +100,7 @@ This project was originally built across two modules: Module 13 introduced the c
 | Fixed **CORS** to use `app.cors.allowed-origins` env var | `allowedOrigins("*")` accepted requests from any domain — appropriate for development, not production |
 | Replaced dead ngrok URL in `client/.env` with `localhost:8080` | The dev `.env` pointed to a temporary tunnel URL that no longer resolves |
 | Added `application.properties.example` and `client/.env.example` | No templates existed — contributors had no way to know what configuration was required |
+| Added `fixPlaintextPasswords()` to `DataSeeder` | The DB was seeded before `BCryptPasswordEncoder` was introduced, leaving demo user passwords as plain text — login returned 401 on all accounts. Startup now detects and re-hashes any plain-text demo passwords automatically |
 
 ## App Structure
 
